@@ -10,7 +10,7 @@ const StyledRowContainer = styled.div`
   gap: 2px;
 `;
 
-type LetterStatus = 'default' | 'ball' | 'strike';
+type LetterStatus = 'default' | 'ball' | 'strike' | 'error';
 
 type Letter = {
   letter: string;

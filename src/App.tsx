@@ -3,7 +3,7 @@ import SubmitLetterRow from './components/SubmitLetterRow.tsx';
 import KeyBoard from './components/KeyBoard.tsx';
 
 function App() {
-  type LetterStatus = 'default' | 'ball' | 'strike';
+  type LetterStatus = 'default' | 'ball' | 'strike' | 'error';
 
   type Letter = {
     letter: string;
@@ -21,12 +21,21 @@ function App() {
     { letter: 'ㅓ', status: 'default' },
     { letter: 'ㅣ', status: 'strike' },
   ];
+  const submitWord2: Letter[] = [
+    { letter: 'ㄱ', status: 'error' },
+    { letter: 'ㅗ', status: 'error' },
+    { letter: 'ㅏ', status: 'error' },
+    { letter: 'ㅈ', status: 'error' },
+    { letter: 'ㅛ', status: 'error' },
+    { letter: 'ㅣ', status: 'error' },
+  ];
 
   return (
     <div>
       <div>
         <LetterRow inputValue={word1} />
         <SubmitLetterRow inputValue={submitWord1} />
+        <SubmitLetterRow inputValue={submitWord2} />
         <LetterRow inputValue={word2} />
         <LetterRow inputValue={word3} />
       </div>

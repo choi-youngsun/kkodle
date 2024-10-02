@@ -28,7 +28,7 @@ export const StyledLetterCell = styled.div`
 `;
 
 export const StyledColorCell = styled(StyledLetterCell)<{
-  cardtype: 'default' | 'ball' | 'strike';
+  cardtype: 'default' | 'ball' | 'strike' | 'error';
 }>`
   background-color: ${({ cardtype }) => {
     switch (cardtype) {
@@ -38,11 +38,17 @@ export const StyledColorCell = styled(StyledLetterCell)<{
         return '#EAB308';
       case 'strike':
         return '#22C55E';
+      case 'error':
+        return '#ffffff';
       default:
         return '#94A3B8'; // 기본값 (예상치 못한 값일 때)
     }
   }};
-  border: 2px solid rgba(255, 255, 255, 0);
+  color: ${({ cardtype }) => (cardtype === 'error' ? '#ff0000' : 'inherit')};
+
+  border: 2px solid
+    ${({ cardtype }) =>
+      cardtype === 'error' ? '#000000' : 'rgba(255, 255, 255, 0)'};
 `;
 
 export const StyledEmptyCell = styled(StyledLetterCell)`
