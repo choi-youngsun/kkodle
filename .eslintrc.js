@@ -11,7 +11,6 @@ module.exports = {
     'plugin:react/recommended', // React 권장 규칙 추가
     'plugin:react/jsx-runtime', // React 17+ JSX 트랜스폼 설정
     'plugin:prettier/recommended', // Prettier와 ESLint 통합
-    'next/core-web-vitals', // Next.js 최적화 규칙 사용
   ],
   parser: '@typescript-eslint/parser', // TypeScript 파일(.ts, .tsx)을 파싱하기 위한 파서 설정
   parserOptions: {
