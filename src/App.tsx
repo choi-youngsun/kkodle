@@ -1,6 +1,6 @@
 import LetterRow from './components/LetterRow.tsx';
 import SubmitLetterRow from './components/SubmitLetterRow.tsx';
-import KeyCard from './components/KeyCard.tsx';
+import KeyBoard from './components/KeyBoard.tsx';
 
 function App() {
   type LetterStatus = 'default' | 'ball' | 'strike';
@@ -30,9 +30,7 @@ function App() {
         <LetterRow inputValue={word2} />
         <LetterRow inputValue={word3} />
       </div>
-      <div>
-        <KeyCard letter="ㄱ" />
-      </div>
+      <KeyBoard />
     </div>
   );
 }

@@ -7,7 +7,7 @@ const StyledKeyCard = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 20px;
+  font-size: 15px;
   background-color: #e2e8f0;
 `;
 
