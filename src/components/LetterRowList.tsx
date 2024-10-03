@@ -49,25 +49,22 @@ export default function LetterRowList() {
 
           setGuesses((prevGuesses) => [...prevGuesses, newGuess]); // 현재 단어 제출
           setCurrentAttempt((prevAttempt) => prevAttempt + 1); // 다음 시도로 넘어감
-          setKeyArray([]); // 배열 초기화
-          setWordError(null); // 에러 메시지 초기화
+          setKeyArray([]);
+          setWordError(null);
         } else {
           setWordError('더 이상 시도할 수 없습니다.');
         }
       } else if (keyToJamoMap[key]) {
         const jamo = keyToJamoMap[key];
         if (keyArray.length < 6) {
-          // 유효한 자모 입력
           setKeyArray((prevKeys) => [...prevKeys, jamo]);
           setWordError(null); // 에러 메시지 초기화
         }
       }
     };
 
-    // 키보드 이벤트 리스너 등록
     window.addEventListener('keydown', handleKeyDown);
 
-    // 컴포넌트가 언마운트될 때 이벤트 리스너 해제
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
