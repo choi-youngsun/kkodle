@@ -10,6 +10,7 @@ export type Letter = {
   status: LetterStatus;
 };
 
+const maxLength = 6;
 const maxGuesses = 6;
 const answer = ['ㄱ', 'ㅗ', 'ㅇ', 'ㅈ', 'ㅏ', 'ㅇ']; // 정답 단어
 
@@ -35,6 +36,8 @@ export default function LetterRowList() {
           setWordError('글자 수가 모자랍니다!');
         } else if (currentAttempt <= maxGuesses) {
           // 6글자일 때 엔터를 누르면 제출
+
+          // guesses에 넣을 배열 추가
           const newGuess: Letter[] = keyArray.map((letter, index) => {
             let status: LetterStatus = 'default'; // 기본 상태
 
@@ -51,12 +54,14 @@ export default function LetterRowList() {
           setCurrentAttempt((prevAttempt) => prevAttempt + 1); // 다음 시도로 넘어감
           setKeyArray([]);
           setWordError(null);
-        } else {
-          setWordError('더 이상 시도할 수 없습니다.');
+        }
+        if (currentAttempt === maxGuesses) {
+          // 6번째 시도일 때 에러 메시지 출력
+          setWordError(`오늘의 정답은 ${answer}입니다!`);
         }
       } else if (keyToJamoMap[key]) {
         const jamo = keyToJamoMap[key];
-        if (keyArray.length < 6) {
+        if (keyArray.length < maxLength) {
           setKeyArray((prevKeys) => [...prevKeys, jamo]);
           setWordError(null); // 에러 메시지 초기화
         }
@@ -76,7 +81,7 @@ export default function LetterRowList() {
         <SubmitLetterRow key={generateUniqueKey()} inputValue={guess} />
       ))}
       {/* 현재 입력 중인 행을 빈 행으로 표시 */}
-      <LetterRow inputValue={keyArray} />
+      {currentAttempt <= 6 && <LetterRow inputValue={keyArray} />}
       {/* 빈 행 렌더링 */}
       {Array.from({ length: maxGuesses - guesses.length - 1 }).map(() => (
         <LetterRow key={generateUniqueKey()} inputValue={[]} />
