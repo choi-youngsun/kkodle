@@ -2,10 +2,10 @@ import { useCallback, useEffect, useState } from 'react';
 import './App.css';
 import { createClient } from '@supabase/supabase-js';
 import dayjs from 'dayjs';
+import styled from 'styled-components';
 import ToolBar from './components/ToolBar.tsx';
-import LetterRow from './components/LetterRow.tsx';
-import SubmitLetterRow from './components/SubmitLetterRow.tsx';
 import KeyBoard from './components/KeyBoard.tsx';
+import LetterRowList from './components/LetterRowList.tsx';
 
 export type LetterStatus = 'default' | 'ball' | 'strike' | 'error';
 
@@ -74,38 +74,20 @@ function App() {
     }
   }, [timeState, gameState, getRandomQuestion]);
 
-  const word1 = ['ㄱ', 'ㅗ', 'ㅏ', 'ㅈ', 'ㅓ', 'ㅣ'];
-  const word2 = ['ㄱ', 'ㅗ', 'ㅈ', 'ㅏ', 'ㅇ'];
-  const word3 = ['ㄱ', 'ㅗ', 'ㅇ'];
-  const submitWord1: Letter[] = [
-    { letter: 'ㄱ', status: 'default' },
-    { letter: 'ㅗ', status: 'ball' },
-    { letter: 'ㅏ', status: 'ball' },
-    { letter: 'ㅈ', status: 'default' },
-    { letter: 'ㅓ', status: 'default' },
-    { letter: 'ㅣ', status: 'strike' },
-  ];
-  const submitWord2: Letter[] = [
-    { letter: 'ㄱ', status: 'error' },
-    { letter: 'ㅗ', status: 'error' },
-    { letter: 'ㅏ', status: 'error' },
-    { letter: 'ㅈ', status: 'error' },
-    { letter: 'ㅛ', status: 'error' },
-    { letter: 'ㅣ', status: 'error' },
-  ];
+  const StyledMainContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  `;
 
   return (
-    <div>
+    <StyledMainContainer>
       <ToolBar />
       <div>
-        <LetterRow inputValue={word1} />
-        <SubmitLetterRow inputValue={submitWord1} />
-        <SubmitLetterRow inputValue={submitWord2} />
-        <LetterRow inputValue={word2} />
-        <LetterRow inputValue={word3} />
+        <LetterRowList />
       </div>
       <KeyBoard />
-    </div>
+    </StyledMainContainer>
   );
 }
 
