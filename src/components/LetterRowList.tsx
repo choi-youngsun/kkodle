@@ -10,28 +10,15 @@ export type Letter = {
   status: LetterStatus;
 };
 
-const word1 = ['ㄱ', 'ㅗ', 'ㅏ', 'ㅈ', 'ㅓ', 'ㅣ'];
-const word2 = ['ㄱ', 'ㅗ', 'ㅈ', 'ㅏ', 'ㅇ'];
-const word3 = ['ㄱ', 'ㅗ', 'ㅇ'];
-const submitWord1: Letter[] = [
-  { letter: 'ㄱ', status: 'default' },
-  { letter: 'ㅗ', status: 'ball' },
-  { letter: 'ㅏ', status: 'ball' },
-  { letter: 'ㅈ', status: 'default' },
-  { letter: 'ㅓ', status: 'default' },
-  { letter: 'ㅣ', status: 'strike' },
-];
-const submitWord2: Letter[] = [
-  { letter: 'ㄱ', status: 'error' },
-  { letter: 'ㅗ', status: 'error' },
-  { letter: 'ㅏ', status: 'error' },
-  { letter: 'ㅈ', status: 'error' },
-  { letter: 'ㅛ', status: 'error' },
-  { letter: 'ㅣ', status: 'error' },
-];
+const maxGuesses = 6;
+const answer = ['ㄱ', 'ㅗ', 'ㅇ', 'ㅈ', 'ㅏ', 'ㅇ']; // 정답 단어
+
+const generateUniqueKey = () => crypto.randomUUID();
 
 export default function LetterRowList() {
   const [keyArray, setKeyArray] = useState<string[]>([]);
+  const [guesses, setGuesses] = useState<Letter[][]>([]);
+  const [currentAttempt, setCurrentAttempt] = useState(1); // 현재 몇 번째 시도인지
   const [wordError, setWordError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -46,11 +33,26 @@ export default function LetterRowList() {
         if (keyArray.length < 6) {
           // 6글자 이하일 때 엔터를 누르면 에러 메시지 출력
           setWordError('글자 수가 모자랍니다!');
-        } else {
-          // 6글자일 때 엔터를 누르면 제출 후 배열 리셋
-          console.log('제출된 단어:', keyArray.join('')); // 제출 로직
+        } else if (currentAttempt <= maxGuesses) {
+          // 6글자일 때 엔터를 누르면 제출
+          const newGuess: Letter[] = keyArray.map((letter, index) => {
+            let status: LetterStatus = 'default'; // 기본 상태
+
+            if (letter === answer[index]) {
+              status = 'strike'; // 정답과 위치가 같은 경우
+            } else if (answer.includes(letter)) {
+              status = 'ball'; // 정답에는 있지만 위치가 다른 경우
+            }
+
+            return { letter, status };
+          });
+
+          setGuesses((prevGuesses) => [...prevGuesses, newGuess]); // 현재 단어 제출
+          setCurrentAttempt((prevAttempt) => prevAttempt + 1); // 다음 시도로 넘어감
           setKeyArray([]); // 배열 초기화
           setWordError(null); // 에러 메시지 초기화
+        } else {
+          setWordError('더 이상 시도할 수 없습니다.');
         }
       } else if (keyToJamoMap[key]) {
         const jamo = keyToJamoMap[key];
@@ -69,17 +71,19 @@ export default function LetterRowList() {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [keyArray]);
-
+  }, [keyArray, currentAttempt]);
   return (
     <div>
       {wordError && <p style={{ color: 'red' }}>{wordError}</p>}
-      <LetterRow inputValue={word1} />
-      <SubmitLetterRow inputValue={submitWord1} />
-      <SubmitLetterRow inputValue={submitWord2} />
-      <LetterRow inputValue={word2} />
-      <LetterRow inputValue={word3} />
+      {guesses.map((guess) => (
+        <SubmitLetterRow key={generateUniqueKey()} inputValue={guess} />
+      ))}
+      {/* 현재 입력 중인 행을 빈 행으로 표시 */}
       <LetterRow inputValue={keyArray} />
+      {/* 빈 행 렌더링 */}
+      {Array.from({ length: maxGuesses - guesses.length - 1 }).map(() => (
+        <LetterRow key={generateUniqueKey()} inputValue={[]} />
+      ))}
     </div>
   );
 }
