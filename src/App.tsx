@@ -5,6 +5,7 @@ import dayjs from 'dayjs';
 import styled from 'styled-components';
 import ToolBar from './components/ToolBar.tsx';
 import KeyBoard from './components/KeyBoard.tsx';
+
 import LetterRowList from './components/LetterRowList.tsx';
 
 export type LetterStatus = 'default' | 'ball' | 'strike' | 'error';
@@ -84,7 +85,7 @@ function App() {
     <StyledMainContainer>
       <ToolBar />
       <div>
-        <LetterRowList />
+        <LetterRowList answer={gameState.solution} />
       </div>
       <KeyBoard />
     </StyledMainContainer>

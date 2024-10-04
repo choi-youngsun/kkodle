@@ -10,13 +10,16 @@ export type Letter = {
   status: LetterStatus;
 };
 
+type AnswerProps = {
+  answer: string;
+};
+
 const maxLength = 6;
 const maxGuesses = 6;
-const answer = ['ㄱ', 'ㅗ', 'ㅇ', 'ㅈ', 'ㅏ', 'ㅇ']; // 정답 단어
 
 const generateUniqueKey = () => crypto.randomUUID();
 
-export default function LetterRowList() {
+export default function LetterRowList({ answer }: AnswerProps) {
   const [keyArray, setKeyArray] = useState<string[]>([]);
   const [guesses, setGuesses] = useState<Letter[][]>([]);
   const [currentAttempt, setCurrentAttempt] = useState(1); // 현재 몇 번째 시도인지
@@ -73,7 +76,7 @@ export default function LetterRowList() {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [keyArray, currentAttempt]);
+  }, [keyArray, currentAttempt, answer]);
   return (
     <div>
       {wordError && <p style={{ color: 'red' }}>{wordError}</p>}
