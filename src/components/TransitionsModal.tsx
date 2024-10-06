@@ -78,7 +78,7 @@ export default function TransitionsModal({
       { letter: 'ㅏ', status: 'ball' },
       { letter: 'ㅈ', status: 'strike' },
       { letter: 'ㅓ', status: 'default' },
-      { letter: 'ㅣ', status: 'bell' },
+      { letter: 'ㅣ', status: 'ball' },
     ];
     switch (modalType) {
       case 'Beaker':
