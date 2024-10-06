@@ -4,7 +4,7 @@ import { createClient } from '@supabase/supabase-js';
 import dayjs from 'dayjs';
 import styled from 'styled-components';
 import ToolBar from './components/ToolBar.tsx';
-import KeyBoard from './components/KeyBoard.tsx';
+import Keyboard from './components/Keyboard.tsx';
 
 import LetterRowList from './components/LetterRowList.tsx';
 
@@ -19,12 +19,16 @@ interface GameState {
   solution: string;
 }
 
-const supabaseUrl = 'https://yznhshnhrfruzomamffs.supabase.co';
+const SUPABASE_URL = 'https://yznhshnhrfruzomamffs.supabase.co';
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-const supabaseKey = process.env.REACT_APP_SUPABASE_KEY!;
-const supabase = createClient(supabaseUrl, supabaseKey);
+const SUPABASE_KEY = process.env.REACT_APP_SUPABASE_KEY!;
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 function App() {
+  const [keyArray, setKeyArray] = useState<string[]>([]);
+  const [guesses, setGuesses] = useState<Letter[][]>([]);
+  const [currentAttempt, setCurrentAttempt] = useState(1); // 현재 몇 번째 시도인지
+  const [wordError, setWordError] = useState<string | null>(null);
   const [timeState, setTimeState] = useState<string>(() => {
     const savedTimeState = window.localStorage.getItem('timeState');
     return savedTimeState ? JSON.parse(savedTimeState) : '';
@@ -85,9 +89,24 @@ function App() {
     <StyledMainContainer>
       <ToolBar />
       <div>
-        <LetterRowList answer={gameState.solution} />
+        <LetterRowList
+          answer={gameState.solution}
+          keyArray={keyArray}
+          setKeyArray={setKeyArray}
+          guesses={guesses}
+          setGuesses={setGuesses}
+          currentAttempt={currentAttempt}
+          setCurrentAttempt={setCurrentAttempt}
+          wordError={wordError}
+          setWordError={setWordError}
+        />
       </div>
-      <KeyBoard />
+      <Keyboard
+        keyArray={keyArray}
+        guesses={guesses}
+        setKeyArray={setKeyArray}
+        setWordError={setWordError}
+      />
     </StyledMainContainer>
   );
 }
