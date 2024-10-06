@@ -84,7 +84,9 @@ export default function LetterRowList({ answer }: AnswerProps) {
         <SubmitLetterRow key={generateUniqueKey()} inputValue={guess} />
       ))}
       {/* 현재 입력 중인 행을 빈 행으로 표시 */}
-      {currentAttempt <= 6 && <LetterRow inputValue={keyArray} />}
+      {currentAttempt <= 6 && (
+        <LetterRow inputValue={keyArray} isError={!!wordError} />
+      )}
       {/* 빈 행 렌더링 */}
       {Array.from({ length: maxGuesses - guesses.length - 1 }).map(() => (
         <LetterRow key={generateUniqueKey()} inputValue={[]} />
