@@ -15,7 +15,7 @@ export type Letter = {
   status: LetterStatus;
 };
 interface GameState {
-  guesses: string[];
+  guesses: Letter[][];
   solution: string;
 }
 
@@ -62,6 +62,12 @@ function App() {
     [gameState.solution]
   );
 
+  const updateGuesses = (newGuesses: Letter[][]) => {
+    const updatedGameState = { ...gameState, guesses: newGuesses };
+    setGameState(updatedGameState);
+    localStorage.setItem('gameState', JSON.stringify(updatedGameState)); // 로컬 스토리지에 저장
+  };
+
   useEffect(() => {
     // TODO: 테스트를 위해 임시 속성임, 추후 1시간 혹은 2시간으로 수정예정
     const now = dayjs().format('YY-MM-DD HH:mm');
@@ -85,7 +91,11 @@ function App() {
     <StyledMainContainer>
       <ToolBar />
       <div>
-        <LetterRowList answer={gameState.solution} />
+        <LetterRowList
+          answer={gameState.solution}
+          onUpdateGuesses={updateGuesses}
+          savedGuesses={gameState.guesses}
+        />
       </div>
       <KeyBoard />
     </StyledMainContainer>

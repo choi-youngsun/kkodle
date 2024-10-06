@@ -12,6 +12,8 @@ export type Letter = {
 
 type AnswerProps = {
   answer: string;
+  onUpdateGuesses: (newGuesses: Letter[][]) => void;
+  savedGuesses: Letter[][];
 };
 
 const maxLength = 6;
@@ -19,9 +21,14 @@ const maxGuesses = 6;
 
 const generateUniqueKey = () => crypto.randomUUID();
 
-export default function LetterRowList({ answer }: AnswerProps) {
+export default function LetterRowList({
+  answer,
+  onUpdateGuesses,
+  savedGuesses,
+}: AnswerProps) {
   const [keyArray, setKeyArray] = useState<string[]>([]);
-  const [guesses, setGuesses] = useState<Letter[][]>([]);
+  // 로컬 스토리지에서 불러온 guesses 그대로 사용
+  const [guesses, setGuesses] = useState<Letter[][]>(savedGuesses);
   const [currentAttempt, setCurrentAttempt] = useState(1); // 현재 몇 번째 시도인지
   const [wordError, setWordError] = useState<string | null>(null);
 
@@ -53,7 +60,9 @@ export default function LetterRowList({ answer }: AnswerProps) {
             return { letter, status };
           });
 
-          setGuesses((prevGuesses) => [...prevGuesses, newGuess]); // 현재 단어 제출
+          const updatedGuesses = [...guesses, newGuess];
+          setGuesses(updatedGuesses);
+          onUpdateGuesses(updatedGuesses);
           setCurrentAttempt((prevAttempt) => prevAttempt + 1); // 다음 시도로 넘어감
           setKeyArray([]);
           setWordError(null);
@@ -76,7 +85,7 @@ export default function LetterRowList({ answer }: AnswerProps) {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [keyArray, currentAttempt, answer]);
+  }, [keyArray, guesses, answer, currentAttempt, onUpdateGuesses]);
   return (
     <div>
       {wordError && <p style={{ color: 'red' }}>{wordError}</p>}
