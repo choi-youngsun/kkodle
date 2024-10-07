@@ -9,29 +9,88 @@ const StyledKeyCard = styled.div`
   justify-content: center;
   font-size: 15px;
   background-color: #e2e8f0;
+  cursor: pointer;
+  &:hover {
+    background-color: #abb9c0;
+  }
+`;
+
+export const SubmitDeleteKeyCard = styled(StyledKeyCard)`
+  width: 50px;
 `;
 
 const StyledColorKey = styled(StyledKeyCard)<{
-  cardtype: 'default' | 'ball' | 'strike';
+  $cardtype: 'default' | 'ball' | 'strike' | 'error' | 'none';
 }>`
-  background-color: ${({ cardtype }) => {
-    switch (cardtype) {
+  color: ${({ $cardtype }) => {
+    switch ($cardtype) {
+      case 'default':
+        return '#fff';
+      case 'ball':
+        return '#fff';
+      case 'strike':
+        return '#fff';
+      case 'none':
+        return 'black';
+      default:
+        return 'black';
+    }
+  }};
+  background-color: ${({ $cardtype }) => {
+    switch ($cardtype) {
       case 'default':
         return '#94A3B8';
       case 'ball':
         return '#EAB308';
       case 'strike':
         return '#22C55E';
+      case 'none':
+        return '#e2e8f0';
       default:
-        return '#94A3B8'; // 기본값 (예상치 못한 값일 때)
+        return '#e2e8f0';
     }
   }};
 `;
 
 type KeyCardProps = {
   letter: string;
+  onClickKeyboard?: (letter: string) => void;
+  onClickKeyboardDelete?: () => void;
+  onClickKeyboardSubmit?: () => void;
+  updateKey?: { [letter: string]: 'default' | 'ball' | 'strike' | 'error' };
 };
 
-export default function KeyCard({ letter }: KeyCardProps) {
-  return <StyledKeyCard>{letter}</StyledKeyCard>;
+export default function KeyCard({
+  letter,
+  onClickKeyboard,
+  onClickKeyboardDelete,
+  onClickKeyboardSubmit,
+  updateKey = {},
+}: KeyCardProps) {
+  const cardType = Object.prototype.hasOwnProperty.call(updateKey, letter)
+    ? updateKey[letter]
+    : 'none';
+  if (letter === '입력') {
+    return (
+      <SubmitDeleteKeyCard onClick={onClickKeyboardSubmit}>
+        {letter}
+      </SubmitDeleteKeyCard>
+    );
+  }
+
+  if (letter === '삭제') {
+    return (
+      <SubmitDeleteKeyCard onClick={onClickKeyboardDelete}>
+        {letter}
+      </SubmitDeleteKeyCard>
+    );
+  }
+  return (
+    <StyledColorKey
+      $cardtype={cardType}
+      onClick={() => onClickKeyboard?.(letter)}
+    >
+      {letter}
+    </StyledColorKey>
+  );
 }

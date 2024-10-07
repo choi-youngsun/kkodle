@@ -12,8 +12,14 @@ export type Letter = {
 
 type AnswerProps = {
   answer: string;
-  onUpdateGuesses: (newGuesses: Letter[][]) => void;
-  savedGuesses: Letter[][];
+  keyArray: string[];
+  setKeyArray: React.Dispatch<React.SetStateAction<string[]>>;
+  guesses: Letter[][];
+  setGuesses: React.Dispatch<React.SetStateAction<Letter[][]>>;
+  currentAttempt: number;
+  setCurrentAttempt: React.Dispatch<React.SetStateAction<number>>;
+  wordError: string | null;
+  setWordError: React.Dispatch<React.SetStateAction<string | null>>;
 };
 
 const maxLength = 6;
@@ -23,15 +29,15 @@ const generateUniqueKey = () => crypto.randomUUID();
 
 export default function LetterRowList({
   answer,
-  onUpdateGuesses,
-  savedGuesses,
+  keyArray,
+  setKeyArray,
+  guesses,
+  setGuesses,
+  currentAttempt,
+  setCurrentAttempt,
+  wordError,
+  setWordError,
 }: AnswerProps) {
-  const [keyArray, setKeyArray] = useState<string[]>([]);
-  // 로컬 스토리지에서 불러온 guesses 그대로 사용
-  const [guesses, setGuesses] = useState<Letter[][]>(savedGuesses);
-  const [currentAttempt, setCurrentAttempt] = useState(1); // 현재 몇 번째 시도인지
-  const [wordError, setWordError] = useState<string | null>(null);
-
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       const key = event.key.toLowerCase();
@@ -62,7 +68,6 @@ export default function LetterRowList({
 
           const updatedGuesses = [...guesses, newGuess];
           setGuesses(updatedGuesses);
-          onUpdateGuesses(updatedGuesses);
           setCurrentAttempt((prevAttempt) => prevAttempt + 1); // 다음 시도로 넘어감
           setKeyArray([]);
           setWordError(null);
@@ -85,7 +90,16 @@ export default function LetterRowList({
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [keyArray, guesses, answer, currentAttempt, onUpdateGuesses]);
+  }, [
+    keyArray,
+    currentAttempt,
+    answer,
+    setKeyArray,
+    setGuesses,
+    setCurrentAttempt,
+    setWordError,
+    guesses,
+  ]);
   return (
     <div>
       {wordError && <p style={{ color: 'red' }}>{wordError}</p>}

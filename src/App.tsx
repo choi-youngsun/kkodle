@@ -4,7 +4,7 @@ import { createClient } from '@supabase/supabase-js';
 import dayjs from 'dayjs';
 import styled from 'styled-components';
 import ToolBar from './components/ToolBar.tsx';
-import KeyBoard from './components/KeyBoard.tsx';
+import Keyboard from './components/KeyBoard.tsx';
 
 import LetterRowList from './components/LetterRowList.tsx';
 
@@ -19,12 +19,16 @@ interface GameState {
   solution: string;
 }
 
-const supabaseUrl = 'https://yznhshnhrfruzomamffs.supabase.co';
+const SUPABASE_URL = 'https://yznhshnhrfruzomamffs.supabase.co';
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-const supabaseKey = process.env.REACT_APP_SUPABASE_KEY!;
-const supabase = createClient(supabaseUrl, supabaseKey);
+const SUPABASE_KEY = process.env.REACT_APP_SUPABASE_KEY!;
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 function App() {
+  const [keyArray, setKeyArray] = useState<string[]>([]);
+  const [guesses, setGuesses] = useState<Letter[][]>([]);
+  const [currentAttempt, setCurrentAttempt] = useState(1); // 현재 몇 번째 시도인지
+  const [wordError, setWordError] = useState<string | null>(null);
   const [timeState, setTimeState] = useState<string>(() => {
     const savedTimeState = window.localStorage.getItem('timeState');
     return savedTimeState ? JSON.parse(savedTimeState) : '';
@@ -62,12 +66,6 @@ function App() {
     [gameState.solution]
   );
 
-  const updateGuesses = (newGuesses: Letter[][]) => {
-    const updatedGameState = { ...gameState, guesses: newGuesses };
-    setGameState(updatedGameState);
-    localStorage.setItem('gameState', JSON.stringify(updatedGameState)); // 로컬 스토리지에 저장
-  };
-
   useEffect(() => {
     // TODO: 테스트를 위해 임시 속성임, 추후 1시간 혹은 2시간으로 수정예정
     const now = dayjs().format('YY-MM-DD HH:mm');
@@ -93,11 +91,22 @@ function App() {
       <div>
         <LetterRowList
           answer={gameState.solution}
-          onUpdateGuesses={updateGuesses}
-          savedGuesses={gameState.guesses}
+          keyArray={keyArray}
+          setKeyArray={setKeyArray}
+          guesses={guesses}
+          setGuesses={setGuesses}
+          currentAttempt={currentAttempt}
+          setCurrentAttempt={setCurrentAttempt}
+          wordError={wordError}
+          setWordError={setWordError}
         />
       </div>
-      <KeyBoard />
+      <Keyboard
+        keyArray={keyArray}
+        guesses={guesses}
+        setKeyArray={setKeyArray}
+        setWordError={setWordError}
+      />
     </StyledMainContainer>
   );
 }
