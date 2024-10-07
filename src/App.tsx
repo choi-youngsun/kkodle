@@ -24,6 +24,7 @@ const SUPABASE_KEY = process.env.REACT_APP_SUPABASE_KEY!;
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 function App() {
+  const now = dayjs().format('YY-MM-DD HH:mm');
   const [keyArray, setKeyArray] = useState<string[]>([]);
 
   const [wordError, setWordError] = useState<string | null>(null);
@@ -32,6 +33,9 @@ function App() {
     return savedTimeState ? JSON.parse(savedTimeState) : '';
   });
   const [gameState, setGameState] = useState<GameState>(() => {
+    if (now !== timeState) {
+      return { guesses: [], solution: '' };
+    }
     const savedGameState = JSON.parse(
       window.localStorage.getItem('gameState') || '{}'
     );
@@ -84,7 +88,7 @@ function App() {
 
   useEffect(() => {
     // TODO: 테스트를 위해 임시 속성임, 추후 1시간 혹은 2시간으로 수정예정
-    const now = dayjs().format('YY-MM-DD HH:mm');
+
     if (timeState !== now) {
       setTimeState(now);
     }
@@ -93,7 +97,7 @@ function App() {
     if (timeState !== now) {
       getRandomQuestion();
     }
-  }, [timeState, gameState, getRandomQuestion]);
+  }, [timeState, gameState, getRandomQuestion, now]);
 
   const StyledMainContainer = styled.div`
     display: flex;
