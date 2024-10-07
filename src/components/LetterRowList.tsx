@@ -11,7 +11,7 @@ export type Letter = {
 };
 
 type AnswerProps = {
-  answer: string;
+  answer: string[];
   keyArray: string[];
   setKeyArray: React.Dispatch<React.SetStateAction<string[]>>;
   guesses: Letter[][];
@@ -38,8 +38,10 @@ export default function LetterRowList({
   wordError,
   setWordError,
 }: AnswerProps) {
+  const [isAnswer, setIsAnswer] = useState(false);
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
+      if (isAnswer) return;
       const key = event.key.toLowerCase();
 
       if (key === 'backspace') {
@@ -68,9 +70,16 @@ export default function LetterRowList({
 
           const updatedGuesses = [...guesses, newGuess];
           setGuesses(updatedGuesses);
-          setCurrentAttempt((prevAttempt) => prevAttempt + 1); // 다음 시도로 넘어감
-          setKeyArray([]);
-          setWordError(null);
+          if (
+            newGuess.every((letter, index) => letter.letter === answer[index])
+          ) {
+            setIsAnswer(true); // 정답을 맞춘 경우
+            setWordError(`축하합니다! 정답은 ${answer}입니다.`);
+          } else {
+            setCurrentAttempt((prevAttempt) => prevAttempt + 1);
+            setKeyArray([]);
+            setWordError(null);
+          }
         }
         if (currentAttempt === maxGuesses) {
           // 6번째 시도일 때 에러 메시지 출력
@@ -99,15 +108,17 @@ export default function LetterRowList({
     setCurrentAttempt,
     setWordError,
     guesses,
+    isAnswer,
   ]);
   return (
     <div>
       {wordError && <p style={{ color: 'red' }}>{wordError}</p>}
-      {guesses.map((guess) => (
-        <SubmitLetterRow key={generateUniqueKey()} inputValue={guess} />
-      ))}
+      {!isAnswer &&
+        guesses.map((guess) => (
+          <SubmitLetterRow key={generateUniqueKey()} inputValue={guess} />
+        ))}
       {/* 현재 입력 중인 행을 빈 행으로 표시 */}
-      {currentAttempt <= 6 && (
+      {!isAnswer && currentAttempt <= 6 && (
         <LetterRow inputValue={keyArray} isError={!!wordError} />
       )}
       {/* 빈 행 렌더링 */}
