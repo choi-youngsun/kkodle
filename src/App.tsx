@@ -4,9 +4,8 @@ import { createClient } from '@supabase/supabase-js';
 import dayjs from 'dayjs';
 import styled from 'styled-components';
 import ToolBar from './components/ToolBar.tsx';
-import Keyboard from './components/Keyboard.tsx';
-
 import LetterRowList from './components/LetterRowList.tsx';
+import Keyboard from './components/Keyboard.tsx';
 
 export type LetterStatus = 'default' | 'ball' | 'strike' | 'error';
 
@@ -15,8 +14,8 @@ export type Letter = {
   status: LetterStatus;
 };
 interface GameState {
-  guesses: string[];
-  solution: string;
+  guesses: Letter[][];
+  solution: string[];
 }
 
 const SUPABASE_URL = 'https://yznhshnhrfruzomamffs.supabase.co';
@@ -26,8 +25,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 function App() {
   const [keyArray, setKeyArray] = useState<string[]>([]);
-  const [guesses, setGuesses] = useState<Letter[][]>([]);
-  const [currentAttempt, setCurrentAttempt] = useState(1); // 현재 몇 번째 시도인지
+
   const [wordError, setWordError] = useState<string | null>(null);
   const [timeState, setTimeState] = useState<string>(() => {
     const savedTimeState = window.localStorage.getItem('timeState');
@@ -41,6 +39,12 @@ function App() {
       ? savedGameState
       : { guesses: [], solution: '' };
   });
+
+  const [guesses, setGuesses] = useState<Letter[][]>(gameState.guesses);
+  const [currentAttempt, setCurrentAttempt] = useState<number>(() => {
+    const savedGuesses = gameState.guesses;
+    return savedGuesses ? savedGuesses.length + 1 : 1;
+  }); // 현재 몇 번째 시도인지
 
   const getRandomQuestion = useCallback(
     async (attempt = 1) => {
@@ -65,6 +69,18 @@ function App() {
     },
     [gameState.solution]
   );
+
+  useEffect(() => {
+    const saveGameState = () => {
+      const newGameState = {
+        ...gameState,
+        guesses,
+      };
+      window.localStorage.setItem('gameState', JSON.stringify(newGameState));
+    };
+
+    saveGameState();
+  }, [guesses, gameState]);
 
   useEffect(() => {
     // TODO: 테스트를 위해 임시 속성임, 추후 1시간 혹은 2시간으로 수정예정

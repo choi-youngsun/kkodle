@@ -10,11 +10,12 @@ const StyledRowContainer = styled.div`
 
 type LetterRowProps = {
   inputValue: string[];
+  isError?: boolean;
 };
 
 const generateUniqueKey = () => crypto.randomUUID();
 
-export default function LetterRow({ inputValue }: LetterRowProps) {
+export default function LetterRow({ inputValue, isError }: LetterRowProps) {
   const maxLetters = 6;
   const emptyCells = Array.from({ length: maxLetters - inputValue.length });
 
@@ -23,7 +24,10 @@ export default function LetterRow({ inputValue }: LetterRowProps) {
       <StyledRowContainer>
         {/* 입력된 글자 렌더링 */}
         {inputValue.map((letter) => (
-          <StyledLetterCell key={generateUniqueKey()}>
+          <StyledLetterCell
+            key={generateUniqueKey()}
+            style={{ color: isError ? 'red' : 'black' }}
+          >
             {letter}
           </StyledLetterCell>
         ))}
