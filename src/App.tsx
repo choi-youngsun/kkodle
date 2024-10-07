@@ -4,9 +4,8 @@ import { createClient } from '@supabase/supabase-js';
 import dayjs from 'dayjs';
 import styled from 'styled-components';
 import ToolBar from './components/ToolBar.tsx';
-import Keyboard from './components/KeyBoard.tsx';
-
 import LetterRowList from './components/LetterRowList.tsx';
+import Keyboard from './components/Keyboard.tsx';
 
 export type LetterStatus = 'default' | 'ball' | 'strike' | 'error';
 
