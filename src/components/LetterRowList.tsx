@@ -22,8 +22,8 @@ type AnswerProps = {
   setWordError: React.Dispatch<React.SetStateAction<string | null>>;
 };
 
-const maxLength = 6;
-const maxGuesses = 6;
+const MAX_LENGTH = 6;
+const MAX_GUESSES = 6;
 
 const generateUniqueKey = () => crypto.randomUUID();
 
@@ -49,10 +49,10 @@ export default function LetterRowList({
         setKeyArray((prevKeys) => prevKeys.slice(0, -1));
         setWordError(null); // 에러 메시지 초기화
       } else if (key === 'enter') {
-        if (keyArray.length < 6) {
+        if (keyArray.length < MAX_LENGTH) {
           // 6글자 이하일 때 엔터를 누르면 에러 메시지 출력
           setWordError('글자 수가 모자랍니다!');
-        } else if (currentAttempt <= maxGuesses) {
+        } else if (currentAttempt <= MAX_LENGTH) {
           // 6글자일 때 엔터를 누르면 제출
 
           // guesses에 넣을 배열 추가
@@ -81,13 +81,13 @@ export default function LetterRowList({
             setWordError(null);
           }
         }
-        if (currentAttempt === maxGuesses) {
+        if (currentAttempt === MAX_GUESSES) {
           // 6번째 시도일 때 에러 메시지 출력
           setWordError(`오늘의 정답은 ${answer}입니다!`);
         }
       } else if (keyToJamoMap[key]) {
         const jamo = keyToJamoMap[key];
-        if (keyArray.length < maxLength) {
+        if (keyArray.length < MAX_LENGTH) {
           setKeyArray((prevKeys) => [...prevKeys, jamo]);
           setWordError(null); // 에러 메시지 초기화
         }
@@ -122,7 +122,7 @@ export default function LetterRowList({
         <LetterRow inputValue={keyArray} isError={!!wordError} />
       )}
       {/* 빈 행 렌더링 */}
-      {Array.from({ length: maxGuesses - guesses.length - 1 }).map(() => (
+      {Array.from({ length: MAX_GUESSES - guesses.length - 1 }).map(() => (
         <LetterRow key={generateUniqueKey()} inputValue={[]} />
       ))}
     </div>
