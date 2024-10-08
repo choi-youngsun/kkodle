@@ -1,1 +1,10 @@
-
+:root {
+  --toastify-color-progress-light: black; /* 원하는 색상으로 수정 */
+}
+.Toastify__toast {
+  background-color: #ffc2d1 !important;
+  color: black !important;
+}
+.Toastify__progress-bar {
+  background-color: #ff6f61 !important;
+}

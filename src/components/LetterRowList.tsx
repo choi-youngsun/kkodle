@@ -1,3 +1,4 @@
+import { toast } from 'react-toastify';
 import { useEffect, useState } from 'react';
 import { keyToJamoMap } from './keyToJamoMap.ts';
 import LetterRow from './LetterRow.tsx';
@@ -110,9 +111,12 @@ export default function LetterRowList({
     guesses,
     isAnswer,
   ]);
+
+  useEffect(() => {
+    toast(wordError);
+  }, [wordError]);
   return (
     <div>
-      {wordError && <p style={{ color: 'red' }}>{wordError}</p>}
       {!isAnswer &&
         guesses.map((guess) => (
           <SubmitLetterRow key={generateUniqueKey()} inputValue={guess} />

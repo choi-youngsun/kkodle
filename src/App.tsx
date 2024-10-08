@@ -1,3 +1,5 @@
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { useCallback, useEffect, useState } from 'react';
 import './App.css';
 import { createClient } from '@supabase/supabase-js';
@@ -6,6 +8,12 @@ import styled from 'styled-components';
 import ToolBar from './components/ToolBar.tsx';
 import LetterRowList from './components/LetterRowList.tsx';
 import Keyboard from './components/Keyboard.tsx';
+
+const StyledMainContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
 
 export type LetterStatus = 'default' | 'ball' | 'strike' | 'error';
 
@@ -57,7 +65,7 @@ function App() {
       const { data, error } = await supabase.rpc('get_random_question');
       if (error) {
         // eslint-disable-next-line no-console
-        console.error('질문을 가져오는 중 오류 발생:', error);
+        console.log('질문을 가져오는 중 오류 발생:');
         return;
       }
 
@@ -92,6 +100,7 @@ function App() {
     if (timeState !== now) {
       setTimeState(now);
     }
+
     window.localStorage.setItem('timeState', JSON.stringify(now));
     window.localStorage.setItem('gameState', JSON.stringify(gameState));
     if (timeState !== now) {
@@ -99,35 +108,38 @@ function App() {
     }
   }, [timeState, gameState, getRandomQuestion, now]);
 
-  const StyledMainContainer = styled.div`
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  `;
-
   return (
-    <StyledMainContainer>
-      <ToolBar />
-      <div>
-        <LetterRowList
-          answer={gameState.solution}
+    <div>
+      <ToastContainer
+        position="top-center"
+        autoClose={3000}
+        progressStyle={{ background: 'red' }}
+        pauseOnFocusLoss={false}
+      />
+      <StyledMainContainer>
+        <ToolBar />
+        <div>
+          <LetterRowList
+            answer={gameState.solution}
+            keyArray={keyArray}
+            setKeyArray={setKeyArray}
+            guesses={guesses}
+            setGuesses={setGuesses}
+            currentAttempt={currentAttempt}
+            setCurrentAttempt={setCurrentAttempt}
+            wordError={wordError}
+            setWordError={setWordError}
+          />
+        </div>
+
+        <Keyboard
           keyArray={keyArray}
-          setKeyArray={setKeyArray}
           guesses={guesses}
-          setGuesses={setGuesses}
-          currentAttempt={currentAttempt}
-          setCurrentAttempt={setCurrentAttempt}
-          wordError={wordError}
+          setKeyArray={setKeyArray}
           setWordError={setWordError}
         />
-      </div>
-      <Keyboard
-        keyArray={keyArray}
-        guesses={guesses}
-        setKeyArray={setKeyArray}
-        setWordError={setWordError}
-      />
-    </StyledMainContainer>
+      </StyledMainContainer>
+    </div>
   );
 }
 
