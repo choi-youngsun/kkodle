@@ -33,6 +33,12 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 function App() {
   const now = dayjs().format('YY-MM-DD HH:mm');
+  const [isChecked, setIsChecked] = useState(false);
+  console.log(isChecked ? 'ON 상태' : 'OFF상태');
+  const handleSwitchToggle = () => {
+    setIsChecked((prev) => !prev);
+  };
+
   const [keyArray, setKeyArray] = useState<string[]>([]);
 
   const [wordError, setWordError] = useState<string | null>(null);
@@ -117,7 +123,10 @@ function App() {
         pauseOnFocusLoss={false}
       />
       <StyledMainContainer>
-        <ToolBar />
+        <ToolBar
+          isChecked={isChecked}
+          handleSwitchToggle={handleSwitchToggle}
+        />
         <div>
           <LetterRowList
             answer={gameState.solution}
@@ -129,6 +138,7 @@ function App() {
             setCurrentAttempt={setCurrentAttempt}
             wordError={wordError}
             setWordError={setWordError}
+            isChecked={isChecked}
           />
         </div>
 

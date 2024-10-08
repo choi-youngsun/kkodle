@@ -6,6 +6,11 @@ import cogIcon from '../assets/cog.svg';
 import questionIcon from '../assets/question.svg';
 import TransitionsModal from './TransitionsModal.tsx';
 
+interface ToolBarProps {
+  isChecked: boolean;
+  handleSwitchToggle: () => void;
+}
+
 const ToolBarContainer = styled.div`
   display: flex;
   align-items: center;
@@ -53,7 +58,7 @@ const AboutGame = styled.button`
     background-color: rgb(199 210 254);
   }
 `;
-function ToolBar() {
+function ToolBar({ isChecked, handleSwitchToggle }: ToolBarProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState('');
   const handleOpen = (type: string) => {
@@ -94,6 +99,8 @@ function ToolBar() {
         isModalOpen={isModalOpen}
         handleClose={handleClose}
         modalType={modalType}
+        handleSwitchToggle={handleSwitchToggle}
+        isChecked={isChecked}
       />
     </ToolBarContainer>
   );
