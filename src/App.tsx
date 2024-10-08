@@ -1,3 +1,5 @@
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { useCallback, useEffect, useState } from 'react';
 import './App.css';
 import { createClient } from '@supabase/supabase-js';
@@ -6,6 +8,12 @@ import styled from 'styled-components';
 import ToolBar from './components/ToolBar.tsx';
 import LetterRowList from './components/LetterRowList.tsx';
 import Keyboard from './components/Keyboard.tsx';
+
+const StyledMainContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
 
 export type LetterStatus = 'default' | 'ball' | 'strike' | 'error';
 
@@ -24,6 +32,7 @@ const SUPABASE_KEY = process.env.REACT_APP_SUPABASE_KEY!;
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 function App() {
+  const now = dayjs().format('YY-MM-DD HH:mm');
   const [keyArray, setKeyArray] = useState<string[]>([]);
 
   const [wordError, setWordError] = useState<string | null>(null);
@@ -32,6 +41,9 @@ function App() {
     return savedTimeState ? JSON.parse(savedTimeState) : '';
   });
   const [gameState, setGameState] = useState<GameState>(() => {
+    if (now !== timeState) {
+      return { guesses: [], solution: '' };
+    }
     const savedGameState = JSON.parse(
       window.localStorage.getItem('gameState') || '{}'
     );
@@ -53,7 +65,7 @@ function App() {
       const { data, error } = await supabase.rpc('get_random_question');
       if (error) {
         // eslint-disable-next-line no-console
-        console.error('질문을 가져오는 중 오류 발생:', error);
+        console.log('질문을 가져오는 중 오류 발생:');
         return;
       }
 
@@ -84,46 +96,50 @@ function App() {
 
   useEffect(() => {
     // TODO: 테스트를 위해 임시 속성임, 추후 1시간 혹은 2시간으로 수정예정
-    const now = dayjs().format('YY-MM-DD HH:mm');
+
     if (timeState !== now) {
       setTimeState(now);
     }
+
     window.localStorage.setItem('timeState', JSON.stringify(now));
     window.localStorage.setItem('gameState', JSON.stringify(gameState));
     if (timeState !== now) {
       getRandomQuestion();
     }
-  }, [timeState, gameState, getRandomQuestion]);
-
-  const StyledMainContainer = styled.div`
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  `;
+  }, [timeState, gameState, getRandomQuestion, now]);
 
   return (
-    <StyledMainContainer>
-      <ToolBar />
-      <div>
-        <LetterRowList
-          answer={gameState.solution}
+    <div>
+      <ToastContainer
+        position="top-center"
+        autoClose={3000}
+        progressStyle={{ background: 'red' }}
+        pauseOnFocusLoss={false}
+      />
+      <StyledMainContainer>
+        <ToolBar />
+        <div>
+          <LetterRowList
+            answer={gameState.solution}
+            keyArray={keyArray}
+            setKeyArray={setKeyArray}
+            guesses={guesses}
+            setGuesses={setGuesses}
+            currentAttempt={currentAttempt}
+            setCurrentAttempt={setCurrentAttempt}
+            wordError={wordError}
+            setWordError={setWordError}
+          />
+        </div>
+
+        <Keyboard
           keyArray={keyArray}
-          setKeyArray={setKeyArray}
           guesses={guesses}
-          setGuesses={setGuesses}
-          currentAttempt={currentAttempt}
-          setCurrentAttempt={setCurrentAttempt}
-          wordError={wordError}
+          setKeyArray={setKeyArray}
           setWordError={setWordError}
         />
-      </div>
-      <Keyboard
-        keyArray={keyArray}
-        guesses={guesses}
-        setKeyArray={setKeyArray}
-        setWordError={setWordError}
-      />
-    </StyledMainContainer>
+      </StyledMainContainer>
+    </div>
   );
 }
 
