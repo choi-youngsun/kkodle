@@ -41,6 +41,21 @@ export default function LetterRowList({
 }: AnswerProps) {
   const [isAnswer, setIsAnswer] = useState(false);
   useEffect(() => {
+    const handleGameEnd = () => {
+      const gameResult = { attempt: currentAttempt, answer }; // 저장할 결과
+
+      // 기존 결과를 로컬 스토리지에서 가져옴
+      const existingResultsString = localStorage.getItem('gameResults');
+      const existingResults = existingResultsString
+        ? JSON.parse(existingResultsString)
+        : [];
+
+      // 새로운 결과 추가
+      existingResults.push(gameResult);
+
+      // 업데이트된 결과를 로컬 스토리지에 저장
+      localStorage.setItem('gameResults', JSON.stringify(existingResults));
+    };
     const handleKeyDown = (event: KeyboardEvent) => {
       if (isAnswer) return;
       const key = event.key.toLowerCase();
@@ -76,6 +91,7 @@ export default function LetterRowList({
           ) {
             setIsAnswer(true); // 정답을 맞춘 경우
             setWordError(`축하합니다! 정답은 ${answer}입니다.`);
+            handleGameEnd();
           } else {
             setCurrentAttempt((prevAttempt) => prevAttempt + 1);
             setKeyArray([]);
@@ -85,6 +101,7 @@ export default function LetterRowList({
         if (currentAttempt === MAX_GUESSES) {
           // 6번째 시도일 때 에러 메시지 출력
           setWordError(`오늘의 정답은 ${answer}입니다!`);
+          handleGameEnd();
         }
       } else if (keyToJamoMap[key]) {
         const jamo = keyToJamoMap[key];
