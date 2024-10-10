@@ -18,7 +18,7 @@ type Letter = {
 };
 
 type LetterRowProps = {
-  inputValue: Letter[]; // 수정된 타입
+  inputValue: Letter[];
   isChecked?: boolean;
 };
 

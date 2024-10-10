@@ -5,6 +5,7 @@ import { IconImg } from './ToolBar.tsx';
 import SubmitLetterRow from './SubmitLetterRow.tsx';
 import { Letter } from '../App.tsx';
 import ColorSwitches from './ColorSwitches.tsx';
+import BeakerModal from './BeakerModal.tsx';
 
 interface Props {
   isModalOpen: boolean;
@@ -106,9 +107,17 @@ export default function TransitionsModal({
       { letter: 'ㅓ', status: 'default' },
       { letter: 'ㅣ', status: 'ball' },
     ];
+
     switch (modalType) {
       case 'Beaker':
-        return <Wrapper>Beaker</Wrapper>;
+        return (
+          <Wrapper>
+            <ModalText>
+              <ModalTitle>개발자에게 단어 추천하기</ModalTitle>
+            </ModalText>
+            <BeakerModal />
+          </Wrapper>
+        );
       case 'Cog':
         return (
           <Wrapper>

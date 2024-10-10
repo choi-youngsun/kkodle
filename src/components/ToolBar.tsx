@@ -9,6 +9,8 @@ import TransitionsModal from './TransitionsModal.tsx';
 interface ToolBarProps {
   isChecked: boolean;
   handleSwitchToggle: () => void;
+  isModalOpen: boolean;
+  setIsModalOpen: (isOpen: boolean) => void;
 }
 
 const ToolBarContainer = styled.div`
@@ -38,7 +40,8 @@ export const IconImg = styled.img`
   cursor: pointer;
 `;
 
-const AboutGame = styled.button`
+export const ClickButton = styled.button`
+  margin: auto;
   background: inherit;
   border: none;
   box-shadow: none;
@@ -58,8 +61,12 @@ const AboutGame = styled.button`
     background-color: rgb(199 210 254);
   }
 `;
-function ToolBar({ isChecked, handleSwitchToggle }: ToolBarProps) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+function ToolBar({
+  isChecked,
+  handleSwitchToggle,
+  isModalOpen,
+  setIsModalOpen,
+}: ToolBarProps) {
   const [modalType, setModalType] = useState('');
   const handleOpen = (type: string) => {
     setIsModalOpen(true);
@@ -94,7 +101,9 @@ function ToolBar({ isChecked, handleSwitchToggle }: ToolBarProps) {
           />
         </ToolBarIconBox>
       </ToolBarWrapper>
-      <AboutGame onClick={() => handleOpen('AboutGame')}>이 놀이는?</AboutGame>
+      <ClickButton onClick={() => handleOpen('AboutGame')}>
+        이 놀이는?
+      </ClickButton>
       <TransitionsModal
         isModalOpen={isModalOpen}
         handleClose={handleClose}

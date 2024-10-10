@@ -22,6 +22,7 @@ type AnswerProps = {
   wordError: string | null;
   setWordError: React.Dispatch<React.SetStateAction<string | null>>;
   isChecked: boolean;
+  isModalOpen: boolean;
 };
 
 const MAX_LENGTH = 6;
@@ -40,11 +41,12 @@ export default function LetterRowList({
   wordError,
   setWordError,
   isChecked,
+  isModalOpen,
 }: AnswerProps) {
   const [isAnswer, setIsAnswer] = useState(false);
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (isAnswer) return;
+      if (isAnswer || isModalOpen) return;
       const key = event.key.toLowerCase();
 
       if (key === 'backspace') {
@@ -112,6 +114,7 @@ export default function LetterRowList({
     setWordError,
     guesses,
     isAnswer,
+    isModalOpen,
   ]);
 
   useEffect(() => {
