@@ -21,6 +21,8 @@ type AnswerProps = {
   setCurrentAttempt: React.Dispatch<React.SetStateAction<number>>;
   wordError: string | null;
   setWordError: React.Dispatch<React.SetStateAction<string | null>>;
+  isChecked: boolean;
+  isModalOpen: boolean;
 };
 
 const MAX_LENGTH = 6;
@@ -38,6 +40,8 @@ export default function LetterRowList({
   setCurrentAttempt,
   wordError,
   setWordError,
+  isChecked,
+  isModalOpen,
 }: AnswerProps) {
   const [isAnswer, setIsAnswer] = useState(false);
 
@@ -78,7 +82,7 @@ export default function LetterRowList({
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (isAnswer) return;
+      if (isAnswer || isModalOpen) return;
       const key = event.key.toLowerCase();
 
       if (key === 'backspace') {
@@ -148,6 +152,7 @@ export default function LetterRowList({
     setWordError,
     guesses,
     isAnswer,
+    isModalOpen,
     handleGameEnd,
   ]);
 
@@ -158,7 +163,11 @@ export default function LetterRowList({
     <div>
       {!isAnswer &&
         guesses.map((guess) => (
-          <SubmitLetterRow key={generateUniqueKey()} inputValue={guess} />
+          <SubmitLetterRow
+            key={generateUniqueKey()}
+            inputValue={guess}
+            isChecked={isChecked}
+          />
         ))}
       {/* 현재 입력 중인 행을 빈 행으로 표시 */}
       {!isAnswer && currentAttempt <= 6 && (

@@ -18,14 +18,22 @@ type Letter = {
 };
 
 type LetterRowProps = {
-  inputValue: Letter[]; // 수정된 타입
+  inputValue: Letter[];
+  isChecked?: boolean;
 };
 
-export default function SubmitLetterRow({ inputValue }: LetterRowProps) {
+export default function SubmitLetterRow({
+  inputValue,
+  isChecked,
+}: LetterRowProps) {
   return (
     <StyledRowContainer>
       {inputValue.map((value) => (
-        <StyledColorCell key={generateUniqueKey()} cardtype={value.status}>
+        <StyledColorCell
+          key={generateUniqueKey()}
+          $cardtype={value.status}
+          $isPictureMod={isChecked}
+        >
           {value.letter}
         </StyledColorCell>
       ))}
