@@ -8,6 +8,7 @@ import styled from 'styled-components';
 import ToolBar from './components/ToolBar.tsx';
 import LetterRowList from './components/LetterRowList.tsx';
 import Keyboard from './components/Keyboard.tsx';
+import ResultToEmoji from './components/ResultToEmoji.ts';
 
 const StyledMainContainer = styled.div`
   display: flex;
@@ -88,6 +89,11 @@ function App() {
     },
     [gameState.solution]
   );
+
+  // 게임 결과를 이모지로 저장
+  const emoji = ResultToEmoji(guesses);
+  const emojiResult = { emojiResult: emoji };
+  localStorage.setItem('emojiResults', JSON.stringify(emojiResult));
 
   useEffect(() => {
     const saveGameState = () => {
