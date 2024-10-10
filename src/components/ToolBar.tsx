@@ -65,7 +65,7 @@ function ToolBar() {
   return (
     <ToolBarContainer>
       <ToolBarWrapper>
-        <ToolBarTitle>꼬들 - 한국어</ToolBarTitle>
+        <ToolBarTitle>꼬들꼬들 - 한국어</ToolBarTitle>
         <ToolBarIconBox>
           <IconImg
             src={beakerIcon}

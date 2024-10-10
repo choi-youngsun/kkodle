@@ -1,5 +1,5 @@
 import { toast } from 'react-toastify';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { keyToJamoMap } from './keyToJamoMap.ts';
 import LetterRow from './LetterRow.tsx';
 import SubmitLetterRow from './SubmitLetterRow.tsx';
@@ -40,6 +40,42 @@ export default function LetterRowList({
   setWordError,
 }: AnswerProps) {
   const [isAnswer, setIsAnswer] = useState(false);
+
+  const handleGameEnd = useCallback(() => {
+    if (isAnswer || currentAttempt === MAX_GUESSES) {
+      // 정답을 맞춘 경우: 시도 횟수와 정답을 저장
+      const gameResult = isAnswer
+        ? { attempt: currentAttempt, answer } // 정답을 맞춘 경우
+        : { attempt: '오답', answer }; // 정답을 맞추지 못한 경우
+
+      // 기존 결과를 로컬 스토리지에서 가져옴
+      const existingResultsString = localStorage.getItem('gameResults');
+
+      const existingResults = existingResultsString
+        ? JSON.parse(existingResultsString)
+        : [];
+
+      // 마지막 결과와 비교
+      const lastResult = existingResults[existingResults.length - 1];
+
+      if (
+        !lastResult ||
+        JSON.stringify(lastResult) !== JSON.stringify(gameResult)
+      ) {
+        // 새로운 결과 추가
+        existingResults.push(gameResult);
+        // 업데이트된 결과를 로컬 스토리지에 저장
+        localStorage.setItem('gameResults', JSON.stringify(existingResults));
+      }
+    }
+  }, [isAnswer, currentAttempt, answer]);
+
+  useEffect(() => {
+    if (isAnswer || currentAttempt === MAX_GUESSES) {
+      handleGameEnd();
+    }
+  }, [isAnswer, currentAttempt, handleGameEnd]);
+
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (isAnswer) return;
@@ -76,6 +112,7 @@ export default function LetterRowList({
           ) {
             setIsAnswer(true); // 정답을 맞춘 경우
             setWordError(`축하합니다! 정답은 ${answer}입니다.`);
+            handleGameEnd();
           } else {
             setCurrentAttempt((prevAttempt) => prevAttempt + 1);
             setKeyArray([]);
@@ -85,6 +122,7 @@ export default function LetterRowList({
         if (currentAttempt === MAX_GUESSES) {
           // 6번째 시도일 때 에러 메시지 출력
           setWordError(`오늘의 정답은 ${answer}입니다!`);
+          handleGameEnd();
         }
       } else if (keyToJamoMap[key]) {
         const jamo = keyToJamoMap[key];
@@ -110,6 +148,7 @@ export default function LetterRowList({
     setWordError,
     guesses,
     isAnswer,
+    handleGameEnd,
   ]);
 
   useEffect(() => {
