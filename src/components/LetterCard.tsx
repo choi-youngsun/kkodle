@@ -1,5 +1,10 @@
 import styled from 'styled-components';
 
+interface ColorCellProps {
+  $cardtype: 'default' | 'ball' | 'strike' | 'error';
+  $isPictureMod?: boolean;
+}
+
 export const StyledCardContainer = styled.div`
   position: relative;
 `;
@@ -27,11 +32,9 @@ export const StyledLetterCell = styled.div`
   background-color: #ffffff;
 `;
 
-export const StyledColorCell = styled(StyledLetterCell)<{
-  cardtype: 'default' | 'ball' | 'strike' | 'error';
-}>`
-  background-color: ${({ cardtype }) => {
-    switch (cardtype) {
+export const StyledColorCell = styled(StyledLetterCell)<ColorCellProps>`
+  background-color: ${({ $cardtype }) => {
+    switch ($cardtype) {
       case 'default':
         return '#94A3B8';
       case 'ball':
@@ -44,11 +47,33 @@ export const StyledColorCell = styled(StyledLetterCell)<{
         return '#94A3B8'; // 기본값 (예상치 못한 값일 때)
     }
   }};
-  color: ${({ cardtype }) => (cardtype === 'error' ? '#ff0000' : 'inherit')};
+  color: ${({ $cardtype, $isPictureMod }) => {
+    // $cardtype이 'error'인 경우 색상 반환
+    if ($cardtype === 'error') {
+      return '#ff0000';
+    }
+
+    // $pictureMod에 따라 색상 반환
+    if ($isPictureMod) {
+      switch ($cardtype) {
+        case 'default':
+          return '#94A3B8';
+        case 'ball':
+          return '#EAB308';
+        case 'strike':
+          return '#22C55E';
+        default:
+          return '#94A3B8'; // 기본값 (예상치 못한 값일 때)
+      }
+    }
+
+    // $pictureMod가 없을 경우 기본 색상 반환
+    return 'inherit';
+  }};
 
   border: 2px solid
-    ${({ cardtype }) =>
-      cardtype === 'error' ? '#000000' : 'rgba(255, 255, 255, 0)'};
+    ${({ $cardtype }) =>
+      $cardtype === 'error' ? '#000000' : 'rgba(255, 255, 255, 0)'};
 `;
 
 export const StyledEmptyCell = styled(StyledLetterCell)`

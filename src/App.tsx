@@ -1,4 +1,4 @@
-import { ToastContainer } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useCallback, useEffect, useState } from 'react';
 import './App.css';
@@ -27,13 +27,20 @@ interface GameState {
   solution: string[];
 }
 
+export type SetUserInputQuestion = (input: string[]) => void;
+
 const SUPABASE_URL = 'https://yznhshnhrfruzomamffs.supabase.co';
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const SUPABASE_KEY = process.env.REACT_APP_SUPABASE_KEY!;
-const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 function App() {
   const now = dayjs().format('YY-MM-DD HH:mm');
+  const [isChecked, setIsChecked] = useState(false);
+  const handleSwitchToggle = () => {
+    setIsChecked((prev) => !prev);
+  };
+
   const [keyArray, setKeyArray] = useState<string[]>([]);
 
   const [wordError, setWordError] = useState<string | null>(null);
@@ -58,6 +65,7 @@ function App() {
     const savedGuesses = gameState.guesses;
     return savedGuesses ? savedGuesses.length + 1 : 1;
   }); // 현재 몇 번째 시도인지
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const getRandomQuestion = useCallback(
     async (attempt = 1) => {
@@ -65,8 +73,7 @@ function App() {
       if (attempt > MAX_ATTEMPTS) return;
       const { data, error } = await supabase.rpc('get_random_question');
       if (error) {
-        // eslint-disable-next-line no-console
-        console.log('질문을 가져오는 중 오류 발생:');
+        toast('질문을 가져오는 중 오류 발생:');
         return;
       }
 
@@ -123,7 +130,12 @@ function App() {
         pauseOnFocusLoss={false}
       />
       <StyledMainContainer>
-        <ToolBar />
+        <ToolBar
+          isChecked={isChecked}
+          handleSwitchToggle={handleSwitchToggle}
+          isModalOpen={isModalOpen}
+          setIsModalOpen={setIsModalOpen}
+        />
         <div>
           <LetterRowList
             answer={gameState.solution}
@@ -135,6 +147,8 @@ function App() {
             setCurrentAttempt={setCurrentAttempt}
             wordError={wordError}
             setWordError={setWordError}
+            isChecked={isChecked}
+            isModalOpen={isModalOpen}
           />
         </div>
 
