@@ -11,6 +11,8 @@ interface ToolBarProps {
   handleSwitchToggle: () => void;
   isModalOpen: boolean;
   setIsModalOpen: (isOpen: boolean) => void;
+  modalType: string;
+  setModalType: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const ToolBarContainer = styled.div`
@@ -66,8 +68,9 @@ function ToolBar({
   handleSwitchToggle,
   isModalOpen,
   setIsModalOpen,
+  modalType,
+  setModalType,
 }: ToolBarProps) {
-  const [modalType, setModalType] = useState('');
   const handleOpen = (type: string) => {
     setIsModalOpen(true);
     setModalType(type);
