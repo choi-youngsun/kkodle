@@ -130,7 +130,7 @@ export default function TransitionsModal({
             </ModalText>
             <CogBox>
               <CogOptionInfo>
-                <CogOptionTitle>사진찍기</CogOptionTitle>
+                <CogOptionTitle>사진 찍기</CogOptionTitle>
                 <CogOptionText>글자를 투명하게 만듭니다.</CogOptionText>
               </CogOptionInfo>
               <ColorSwitches
