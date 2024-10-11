@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 interface CardProps {
-  $isThemeMod: boolean;
+  $isThemeMod?: boolean;
   $cardtype: 'default' | 'ball' | 'strike' | 'error' | 'none';
 }
 
@@ -73,7 +73,7 @@ type KeyCardProps = {
   onClickKeyboardDelete?: () => void;
   onClickKeyboardSubmit?: () => void;
   updateKey?: { [letter: string]: 'default' | 'ball' | 'strike' | 'error' };
-  isThemeMod: boolean;
+  isThemeMod?: boolean;
 };
 
 export default function KeyCard({

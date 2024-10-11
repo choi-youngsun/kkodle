@@ -4,7 +4,6 @@ import CloseIcon from '../assets/close.svg';
 import { IconImg } from './ToolBar.tsx';
 import SubmitLetterRow from './SubmitLetterRow.tsx';
 import { Letter, ToggleSwitchProps } from '../App.tsx';
-import { Letter } from '../App.tsx';
 import ChartModal from './ChartModal.tsx';
 import ColorSwitches from './ColorSwitches.tsx';
 import BeakerModal from './BeakerModal.tsx';
