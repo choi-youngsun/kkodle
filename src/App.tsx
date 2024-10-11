@@ -35,6 +35,7 @@ const SUPABASE_KEY = process.env.REACT_APP_SUPABASE_KEY!;
 export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 function App() {
+  const [modalType, setModalType] = useState('');
   const now = dayjs().format('YY-MM-DD HH:mm');
   const [isChecked, setIsChecked] = useState(false);
   const handleSwitchToggle = () => {
@@ -135,6 +136,8 @@ function App() {
           handleSwitchToggle={handleSwitchToggle}
           isModalOpen={isModalOpen}
           setIsModalOpen={setIsModalOpen}
+          modalType={modalType}
+          setModalType={setModalType}
         />
         <div>
           <LetterRowList
@@ -149,6 +152,8 @@ function App() {
             setWordError={setWordError}
             isChecked={isChecked}
             isModalOpen={isModalOpen}
+            setIsModalOpen={setIsModalOpen}
+            setModalType={setModalType}
           />
         </div>
 
