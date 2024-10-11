@@ -15,7 +15,9 @@ type ResultStats = {
   attemptCounts: AttemptCounts;
 };
 
-export default function CalculateResult(gameResult: GameResult[]): ResultStats {
+export default function CalculateResult(
+  gameResult: GameResult[] = []
+): ResultStats {
   // 1. 전체 게임 횟수
   const totalGames = gameResult.length;
 

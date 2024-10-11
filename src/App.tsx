@@ -153,7 +153,6 @@ function App() {
             isChecked={isChecked}
             isModalOpen={isModalOpen}
             setIsModalOpen={setIsModalOpen}
-            modalType={modalType}
             setModalType={setModalType}
           />
         </div>

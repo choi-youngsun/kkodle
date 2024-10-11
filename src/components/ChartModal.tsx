@@ -86,37 +86,26 @@ const StyledButton = styled.button`
   cursor: pointer;
 `;
 
-const mockGameResult = [
-  { attempt: 6, answer: ['ㄱ', 'ㅏ', 'ㄴ', 'ㅈ', 'ㅏ', 'ㅇ'] },
-  { attempt: 2, answer: ['ㄱ', 'ㅏ', 'ㄴ', 'ㅈ', 'ㅏ', 'ㅇ'] },
-  { attempt: 3, answer: ['ㄱ', 'ㅗ', 'ㄴ', 'ㅇ', 'ㅑ', 'ㄱ'] },
-  { attempt: 1, answer: ['ㅇ', 'ㅠ', 'ㄱ', 'ㅎ', 'ㅗ', 'ㅣ'] },
-  { attempt: 4, answer: ['ㄱ', 'ㅏ', 'ㄴ', 'ㅈ', 'ㅏ', 'ㅇ'] },
-  { attempt: 3, answer: ['ㅇ', 'ㅠ', 'ㅇ', 'ㅎ', 'ㅗ', 'ㅏ'] },
-  { attempt: 3, answer: ['ㄱ', 'ㅗ', 'ㄴ', 'ㅇ', 'ㅑ', 'ㄱ'] },
-  { attempt: '오답', answer: ['ㅇ', 'ㅠ', 'ㄱ', 'ㅎ', 'ㅗ', 'ㅣ'] },
-  { attempt: '오답', answer: ['ㅊ', 'ㅗ', 'ㅣ', 'ㅈ', 'ㅗ', 'ㅇ'] },
-  { attempt: '오답', answer: ['ㅇ', 'ㅠ', 'ㄱ', 'ㅎ', 'ㅗ', 'ㅣ'] },
-  { attempt: '오답', answer: ['ㅇ', 'ㅠ', 'ㄱ', 'ㅎ', 'ㅗ', 'ㅣ'] },
-  { attempt: '오답', answer: ['ㅇ', 'ㅠ', 'ㄱ', 'ㅎ', 'ㅗ', 'ㅣ'] },
-  { attempt: '오답', answer: ['ㅇ', 'ㅠ', 'ㄱ', 'ㅎ', 'ㅗ', 'ㅣ'] },
-  { attempt: '오답', answer: ['ㅇ', 'ㅠ', 'ㄱ', 'ㅎ', 'ㅗ', 'ㅣ'] },
-  { attempt: '오답', answer: ['ㅇ', 'ㅠ', 'ㄱ', 'ㅎ', 'ㅗ', 'ㅣ'] },
-  { attempt: '오답', answer: ['ㅇ', 'ㅠ', 'ㄱ', 'ㅎ', 'ㅗ', 'ㅣ'] },
-  { attempt: '오답', answer: ['ㅇ', 'ㅑ', 'ㄱ', 'ㄱ', 'ㅜ', 'ㄱ'] },
-  { attempt: '오답', answer: ['ㅇ', 'ㅑ', 'ㄱ', 'ㄱ', 'ㅜ', 'ㄱ'] },
-  { attempt: '오답', answer: ['ㅇ', 'ㅑ', 'ㄱ', 'ㄱ', 'ㅜ', 'ㄱ'] },
-  { attempt: '오답', answer: ['ㅇ', 'ㅑ', 'ㄱ', 'ㄱ', 'ㅜ', 'ㄱ'] },
-  { attempt: '오답', answer: ['ㅇ', 'ㅑ', 'ㄱ', 'ㄱ', 'ㅜ', 'ㄱ'] },
-  { attempt: 1, answer: ['ㅇ', 'ㅑ', 'ㄱ', 'ㄱ', 'ㅜ', 'ㄱ'] },
-  { attempt: '오답', answer: ['ㄱ', 'ㅗ', 'ㄴ', 'ㅇ', 'ㅑ', 'ㄱ'] },
-  { attempt: 2, answer: ['ㄱ', 'ㅗ', 'ㄴ', 'ㅇ', 'ㅑ', 'ㄱ'] },
-  { attempt: '오답', answer: ['ㄱ', 'ㅗ', 'ㄴ', 'ㅇ', 'ㅑ', 'ㄱ'] },
-  { attempt: 3, answer: ['ㅇ', 'ㅑ', 'ㄱ', 'ㄱ', 'ㅜ', 'ㄱ'] },
-];
+type GameResult = {
+  attempt: number | string;
+  answer: string[];
+};
+
+// 게임 누적 결과를 로컬 스토리지에서 가져옴
+const storedGameResult = localStorage.getItem('gameResults');
+let gameResult: GameResult[] = [];
+
+if (storedGameResult) {
+  try {
+    // localStorage에서 가져온 값을 JSON.parse()로 배열로 변환
+    gameResult = JSON.parse(storedGameResult);
+  } catch (error) {
+    console.error('Failed to parse gameResult from localStorage:', error);
+  }
+}
 
 const generateUniqueKey = () => crypto.randomUUID();
-const resultStats = CalculateResult(mockGameResult);
+const resultStats = CalculateResult(gameResult);
 // attemptCounts의 값만 배열로 변환
 const attemptCountsArray = Object.values(resultStats.attemptCounts);
 const percentageArray = CountToPercent(attemptCountsArray);

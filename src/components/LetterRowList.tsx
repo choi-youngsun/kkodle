@@ -24,7 +24,6 @@ type AnswerProps = {
   isChecked: boolean;
   isModalOpen: boolean;
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  modalType: string;
   setModalType: React.Dispatch<React.SetStateAction<string>>;
 };
 
@@ -46,7 +45,6 @@ export default function LetterRowList({
   isChecked,
   isModalOpen,
   setIsModalOpen,
-  modalType,
   setModalType,
 }: AnswerProps) {
   const [isAnswer, setIsAnswer] = useState(false);
