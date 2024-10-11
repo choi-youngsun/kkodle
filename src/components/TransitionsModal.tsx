@@ -4,11 +4,15 @@ import CloseIcon from '../assets/close.svg';
 import { IconImg } from './ToolBar.tsx';
 import SubmitLetterRow from './SubmitLetterRow.tsx';
 import { Letter } from '../App.tsx';
+import ColorSwitches from './ColorSwitches.tsx';
+import BeakerModal from './BeakerModal.tsx';
 
 interface Props {
   isModalOpen: boolean;
   handleClose: () => void;
   modalType: string;
+  isChecked: boolean;
+  handleSwitchToggle: () => void;
 }
 
 const customStyles = {
@@ -50,7 +54,7 @@ const CloseButton = styled.button`
   padding: 0;
   margin: 0.5rem;
 `;
-const ModalText = styled.p`
+const ModalText = styled.span`
   display: flex;
   justify-content: center;
   align-items: center;
@@ -58,18 +62,41 @@ const ModalText = styled.p`
   flex-direction: column;
   margin: 0;
 `;
-const ModalTitle = styled.h2`
+const ModalTitle = styled.span`
   margin: 0.5rem 0 1rem 0;
+  font-size: 1.3rem;
 `;
-const ModalMiniText = styled.p`
+const ModalMiniText = styled.span`
   margin: 0 0 1rem 0;
   font-size: 0.9rem;
+  color: gray;
+`;
+
+const CogBox = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`;
+
+const CogOptionInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+const CogOptionTitle = styled.span`
+  font-size: 1rem;
+`;
+
+const CogOptionText = styled.span`
+  font-size: 0.7rem;
   color: gray;
 `;
 export default function TransitionsModal({
   isModalOpen,
   handleClose,
   modalType,
+  handleSwitchToggle,
+  isChecked,
 }: Props) {
   const renderModalContent = () => {
     const submitWord1: Letter[] = [
@@ -80,11 +107,35 @@ export default function TransitionsModal({
       { letter: 'ㅓ', status: 'default' },
       { letter: 'ㅣ', status: 'ball' },
     ];
+
     switch (modalType) {
       case 'Beaker':
-        return <Wrapper>Beaker</Wrapper>;
+        return (
+          <Wrapper>
+            <ModalText>
+              <ModalTitle>개발자에게 단어 추천하기</ModalTitle>
+            </ModalText>
+            <BeakerModal />
+          </Wrapper>
+        );
       case 'Cog':
-        return <Wrapper>Cog</Wrapper>;
+        return (
+          <Wrapper>
+            <ModalText>
+              <ModalTitle>설정</ModalTitle>
+            </ModalText>
+            <CogBox>
+              <CogOptionInfo>
+                <CogOptionTitle>사진찍기</CogOptionTitle>
+                <CogOptionText>글자를 투명하게 만듭니다.</CogOptionText>
+              </CogOptionInfo>
+              <ColorSwitches
+                checked={isChecked}
+                onChange={handleSwitchToggle}
+              />
+            </CogBox>
+          </Wrapper>
+        );
       case 'Question':
         return (
           <Wrapper>
