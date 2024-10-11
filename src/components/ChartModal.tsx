@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import ChartBar from './ChartBar.tsx';
 import CountToPercent from './CountToPercent.ts';
+import CalculateResult from './CalculateResult.ts';
 
 const StyledMainSection = styled.div``;
 
@@ -33,6 +34,8 @@ const StyledIndexNumber = styled.p`
   font-size: 13px;
   font-weight: 500;
   margin: 0;
+  text-align: center;
+  width: 10px;
 `;
 
 const StyledText = styled.p`
@@ -60,7 +63,7 @@ const StyleBottomSection = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 30px 0 10px 0;
+  margin: 30px 0 5px 0;
 `;
 
 const StyledTimeText = styled.p`
@@ -83,9 +86,40 @@ const StyledButton = styled.button`
   cursor: pointer;
 `;
 
-const inputArray = [100, 30, 20, 40, 50, 30];
-const percentageArray = CountToPercent(inputArray);
+const mockGameResult = [
+  { attempt: 6, answer: ['ㄱ', 'ㅏ', 'ㄴ', 'ㅈ', 'ㅏ', 'ㅇ'] },
+  { attempt: 2, answer: ['ㄱ', 'ㅏ', 'ㄴ', 'ㅈ', 'ㅏ', 'ㅇ'] },
+  { attempt: 3, answer: ['ㄱ', 'ㅗ', 'ㄴ', 'ㅇ', 'ㅑ', 'ㄱ'] },
+  { attempt: 1, answer: ['ㅇ', 'ㅠ', 'ㄱ', 'ㅎ', 'ㅗ', 'ㅣ'] },
+  { attempt: 4, answer: ['ㄱ', 'ㅏ', 'ㄴ', 'ㅈ', 'ㅏ', 'ㅇ'] },
+  { attempt: 3, answer: ['ㅇ', 'ㅠ', 'ㅇ', 'ㅎ', 'ㅗ', 'ㅏ'] },
+  { attempt: 3, answer: ['ㄱ', 'ㅗ', 'ㄴ', 'ㅇ', 'ㅑ', 'ㄱ'] },
+  { attempt: '오답', answer: ['ㅇ', 'ㅠ', 'ㄱ', 'ㅎ', 'ㅗ', 'ㅣ'] },
+  { attempt: '오답', answer: ['ㅊ', 'ㅗ', 'ㅣ', 'ㅈ', 'ㅗ', 'ㅇ'] },
+  { attempt: '오답', answer: ['ㅇ', 'ㅠ', 'ㄱ', 'ㅎ', 'ㅗ', 'ㅣ'] },
+  { attempt: '오답', answer: ['ㅇ', 'ㅠ', 'ㄱ', 'ㅎ', 'ㅗ', 'ㅣ'] },
+  { attempt: '오답', answer: ['ㅇ', 'ㅠ', 'ㄱ', 'ㅎ', 'ㅗ', 'ㅣ'] },
+  { attempt: '오답', answer: ['ㅇ', 'ㅠ', 'ㄱ', 'ㅎ', 'ㅗ', 'ㅣ'] },
+  { attempt: '오답', answer: ['ㅇ', 'ㅠ', 'ㄱ', 'ㅎ', 'ㅗ', 'ㅣ'] },
+  { attempt: '오답', answer: ['ㅇ', 'ㅠ', 'ㄱ', 'ㅎ', 'ㅗ', 'ㅣ'] },
+  { attempt: '오답', answer: ['ㅇ', 'ㅠ', 'ㄱ', 'ㅎ', 'ㅗ', 'ㅣ'] },
+  { attempt: '오답', answer: ['ㅇ', 'ㅑ', 'ㄱ', 'ㄱ', 'ㅜ', 'ㄱ'] },
+  { attempt: '오답', answer: ['ㅇ', 'ㅑ', 'ㄱ', 'ㄱ', 'ㅜ', 'ㄱ'] },
+  { attempt: '오답', answer: ['ㅇ', 'ㅑ', 'ㄱ', 'ㄱ', 'ㅜ', 'ㄱ'] },
+  { attempt: '오답', answer: ['ㅇ', 'ㅑ', 'ㄱ', 'ㄱ', 'ㅜ', 'ㄱ'] },
+  { attempt: '오답', answer: ['ㅇ', 'ㅑ', 'ㄱ', 'ㄱ', 'ㅜ', 'ㄱ'] },
+  { attempt: 1, answer: ['ㅇ', 'ㅑ', 'ㄱ', 'ㄱ', 'ㅜ', 'ㄱ'] },
+  { attempt: '오답', answer: ['ㄱ', 'ㅗ', 'ㄴ', 'ㅇ', 'ㅑ', 'ㄱ'] },
+  { attempt: 2, answer: ['ㄱ', 'ㅗ', 'ㄴ', 'ㅇ', 'ㅑ', 'ㄱ'] },
+  { attempt: '오답', answer: ['ㄱ', 'ㅗ', 'ㄴ', 'ㅇ', 'ㅑ', 'ㄱ'] },
+  { attempt: 3, answer: ['ㅇ', 'ㅑ', 'ㄱ', 'ㄱ', 'ㅜ', 'ㄱ'] },
+];
+
 const generateUniqueKey = () => crypto.randomUUID();
+const resultStats = CalculateResult(mockGameResult);
+// attemptCounts의 값만 배열로 변환
+const attemptCountsArray = Object.values(resultStats.attemptCounts);
+const percentageArray = CountToPercent(attemptCountsArray);
 
 export default function ChartModal() {
   return (
@@ -93,25 +127,25 @@ export default function ChartModal() {
       <StyledTitle>통계</StyledTitle>
       <StyledTopSection>
         <StyledColumn>
-          <StyledNumber>1</StyledNumber>
+          <StyledNumber>{resultStats.totalGames}</StyledNumber>
           <StyledText>전체 도전</StyledText>
         </StyledColumn>
         <StyledColumn>
-          <StyledNumber>100%</StyledNumber>
+          <StyledNumber>{resultStats.correctRate}%</StyledNumber>
           <StyledText>정답률</StyledText>
         </StyledColumn>
         <StyledColumn>
-          <StyledNumber>1</StyledNumber>
+          <StyledNumber>{resultStats.recentStreak}</StyledNumber>
           <StyledText>최근 연속 정답</StyledText>
         </StyledColumn>
         <StyledColumn>
-          <StyledNumber>1</StyledNumber>
+          <StyledNumber>{resultStats.maxStreak}</StyledNumber>
           <StyledText>최다 연속 정답</StyledText>
         </StyledColumn>
       </StyledTopSection>
       <StyledTitle>도전 분포</StyledTitle>
       <StyledMiddleSection>
-        {inputArray.map((count, index) => (
+        {attemptCountsArray.map((count, index) => (
           <StyledChartBarSection key={generateUniqueKey()}>
             <StyledIndexNumber>{index + 1}</StyledIndexNumber>
             <ChartBar rate={percentageArray[index]} count={count} />

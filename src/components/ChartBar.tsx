@@ -4,7 +4,7 @@ const StyledBar = styled.div<{ rate: number }>`
   background-color: #2563eb;
   height: 18px;
   border-radius: 40px 0 0 40px;
-  width: ${({ rate }) => `${rate}%`};
+  width: ${({ rate }) => (rate === 0 ? '15px' : `${rate}%`)};
 `;
 
 const StyledCount = styled.p`
