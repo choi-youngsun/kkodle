@@ -69,7 +69,6 @@ const ModalTitle = styled.span`
   font-size: 1.3rem;
 `;
 const ModalMiniText = styled.span`
-  margin: 0 0 1rem 0;
   font-size: 0.9rem;
   color: gray;
 `;
@@ -88,11 +87,13 @@ const CogOptionInfo = styled.div`
 
 const CogOptionTitle = styled.span`
   font-size: 1rem;
+  padding: 0.2rem 0;
 `;
 
 const CogOptionText = styled.span`
   font-size: 0.7rem;
   color: gray;
+  padding: 0.2rem 0;
 `;
 export default function TransitionsModal({
   isModalOpen,
