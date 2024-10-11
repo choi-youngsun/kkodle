@@ -8,6 +8,7 @@ type AnswerProps = {
   guesses: Letter[][];
   setKeyArray: React.Dispatch<React.SetStateAction<string[]>>;
   setWordError: React.Dispatch<React.SetStateAction<string | null>>;
+  isThemeMod: boolean;
 };
 
 const KeyValue1 = ['ㅂ', 'ㅈ', 'ㄷ', 'ㄱ', 'ㅅ', 'ㅛ', 'ㅕ', 'ㅑ'];
@@ -29,6 +30,7 @@ export default function Keyboard({
   guesses,
   setKeyArray,
   setWordError,
+  isThemeMod,
 }: AnswerProps) {
   const onClickKeyboard = (letter: string) => {
     if (keyArray.length >= 6) return;
@@ -62,6 +64,7 @@ export default function Keyboard({
             key={letter}
             onClickKeyboard={() => onClickKeyboard(letter)}
             updateKey={updateKey}
+            isThemeMod={isThemeMod}
           />
         ))}
       </StyledKeyboardRow>
@@ -72,6 +75,7 @@ export default function Keyboard({
             key={letter}
             onClickKeyboard={() => onClickKeyboard(letter)}
             updateKey={updateKey}
+            isThemeMod={isThemeMod}
           />
         ))}
       </StyledKeyboardRow>
@@ -83,6 +87,7 @@ export default function Keyboard({
             key={letter}
             onClickKeyboard={() => onClickKeyboard(letter)}
             updateKey={updateKey}
+            isThemeMod={isThemeMod}
           />
         ))}
         <KeyCard letter="삭제" onClickKeyboardDelete={onClickKeyboardDelete} />

@@ -29,6 +29,10 @@ interface GameState {
 
 export type SetUserInputQuestion = (input: string[]) => void;
 
+export type ToggleSwitchProps = {
+  handleSwitch: (mode: string) => () => void;
+};
+
 const SUPABASE_URL = 'https://yznhshnhrfruzomamffs.supabase.co';
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const SUPABASE_KEY = process.env.REACT_APP_SUPABASE_KEY!;
@@ -36,11 +40,17 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 function App() {
   const now = dayjs().format('YY-MM-DD HH:mm');
-  const [isChecked, setIsChecked] = useState(false);
-  const handleSwitchToggle = () => {
-    setIsChecked((prev) => !prev);
-  };
+  const [isPictureMod, setIsPictureMod] = useState(false);
+  const [isThemeMod, setIsThemeMod] = useState(false);
 
+  console.log(isPictureMod, '픽쳐모드', isThemeMod, '테마모드');
+  const handleSwitch = (mode: string) => () => {
+    if (mode === 'PictureMod') {
+      setIsPictureMod((prev) => !prev);
+    } else if (mode === 'ThemeMod') {
+      setIsThemeMod((prev) => !prev);
+    }
+  };
   const [keyArray, setKeyArray] = useState<string[]>([]);
 
   const [wordError, setWordError] = useState<string | null>(null);
@@ -131,9 +141,10 @@ function App() {
       />
       <StyledMainContainer>
         <ToolBar
-          isChecked={isChecked}
-          handleSwitchToggle={handleSwitchToggle}
+          isPictureMod={isPictureMod}
+          handleSwitch={handleSwitch}
           isModalOpen={isModalOpen}
+          isThemeMod={isThemeMod}
           setIsModalOpen={setIsModalOpen}
         />
         <div>
@@ -147,8 +158,9 @@ function App() {
             setCurrentAttempt={setCurrentAttempt}
             wordError={wordError}
             setWordError={setWordError}
-            isChecked={isChecked}
+            isPictureMod={isPictureMod}
             isModalOpen={isModalOpen}
+            isThemeMod={isThemeMod}
           />
         </div>
 
@@ -157,6 +169,7 @@ function App() {
           guesses={guesses}
           setKeyArray={setKeyArray}
           setWordError={setWordError}
+          isThemeMod={isThemeMod}
         />
       </StyledMainContainer>
     </div>

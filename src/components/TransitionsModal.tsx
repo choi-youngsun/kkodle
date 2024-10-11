@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import CloseIcon from '../assets/close.svg';
 import { IconImg } from './ToolBar.tsx';
 import SubmitLetterRow from './SubmitLetterRow.tsx';
-import { Letter } from '../App.tsx';
+import { Letter, ToggleSwitchProps } from '../App.tsx';
 import ColorSwitches from './ColorSwitches.tsx';
 import BeakerModal from './BeakerModal.tsx';
 
@@ -11,8 +11,9 @@ interface Props {
   isModalOpen: boolean;
   handleClose: () => void;
   modalType: string;
-  isChecked: boolean;
-  handleSwitchToggle: () => void;
+  isPictureMod: boolean;
+  handleSwitch: ToggleSwitchProps['handleSwitch'];
+  isThemeMod: boolean;
 }
 
 const customStyles = {
@@ -76,6 +77,7 @@ const CogBox = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  border-bottom: 1px solid gray;
 `;
 
 const CogOptionInfo = styled.div`
@@ -95,8 +97,9 @@ export default function TransitionsModal({
   isModalOpen,
   handleClose,
   modalType,
-  handleSwitchToggle,
-  isChecked,
+  handleSwitch,
+  isPictureMod,
+  isThemeMod,
 }: Props) {
   const renderModalContent = () => {
     const submitWord1: Letter[] = [
@@ -130,8 +133,22 @@ export default function TransitionsModal({
                 <CogOptionText>글자를 투명하게 만듭니다.</CogOptionText>
               </CogOptionInfo>
               <ColorSwitches
-                checked={isChecked}
-                onChange={handleSwitchToggle}
+                checked={isPictureMod}
+                handleSwitch={handleSwitch}
+                mode="PictureMod"
+              />
+            </CogBox>
+            <CogBox>
+              <CogOptionInfo>
+                <CogOptionTitle>고대비 형태</CogOptionTitle>
+                <CogOptionText>
+                  칸의 색깔들을 더 구별하기 쉽게 바꿉니다.
+                </CogOptionText>
+              </CogOptionInfo>
+              <ColorSwitches
+                checked={isThemeMod}
+                handleSwitch={handleSwitch}
+                mode="ThemeMod"
               />
             </CogBox>
           </Wrapper>

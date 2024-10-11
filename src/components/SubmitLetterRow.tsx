@@ -19,12 +19,14 @@ type Letter = {
 
 type LetterRowProps = {
   inputValue: Letter[];
-  isChecked?: boolean;
+  isPictureMod?: boolean;
+  isThemeMod?: boolean;
 };
 
 export default function SubmitLetterRow({
   inputValue,
-  isChecked,
+  isPictureMod,
+  isThemeMod,
 }: LetterRowProps) {
   return (
     <StyledRowContainer>
@@ -32,7 +34,8 @@ export default function SubmitLetterRow({
         <StyledColorCell
           key={generateUniqueKey()}
           $cardtype={value.status}
-          $isPictureMod={isChecked}
+          $isPictureMod={isPictureMod}
+          $isThemeMod={isThemeMod}
         >
           {value.letter}
         </StyledColorCell>

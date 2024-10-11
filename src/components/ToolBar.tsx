@@ -5,11 +5,13 @@ import chartIcon from '../assets/chart.svg';
 import cogIcon from '../assets/cog.svg';
 import questionIcon from '../assets/question.svg';
 import TransitionsModal from './TransitionsModal.tsx';
+import { ToggleSwitchProps } from '../App.tsx';
 
 interface ToolBarProps {
-  isChecked: boolean;
-  handleSwitchToggle: () => void;
+  isPictureMod: boolean;
+  handleSwitch: ToggleSwitchProps['handleSwitch'];
   isModalOpen: boolean;
+  isThemeMod: boolean;
   setIsModalOpen: (isOpen: boolean) => void;
 }
 
@@ -62,9 +64,10 @@ export const ClickButton = styled.button`
   }
 `;
 function ToolBar({
-  isChecked,
-  handleSwitchToggle,
+  isPictureMod,
+  handleSwitch,
   isModalOpen,
+  isThemeMod,
   setIsModalOpen,
 }: ToolBarProps) {
   const [modalType, setModalType] = useState('');
@@ -108,8 +111,9 @@ function ToolBar({
         isModalOpen={isModalOpen}
         handleClose={handleClose}
         modalType={modalType}
-        handleSwitchToggle={handleSwitchToggle}
-        isChecked={isChecked}
+        handleSwitch={handleSwitch}
+        isPictureMod={isPictureMod}
+        isThemeMod={isThemeMod}
       />
     </ToolBarContainer>
   );
