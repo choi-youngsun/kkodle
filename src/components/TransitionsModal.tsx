@@ -4,6 +4,7 @@ import CloseIcon from '../assets/close.svg';
 import { IconImg } from './ToolBar.tsx';
 import SubmitLetterRow from './SubmitLetterRow.tsx';
 import { Letter } from '../App.tsx';
+import ChartModal from './ChartModal.tsx';
 
 interface Props {
   isModalOpen: boolean;
@@ -110,7 +111,11 @@ export default function TransitionsModal({
           </Wrapper>
         );
       case 'Chart':
-        return <Wrapper>Chart</Wrapper>;
+        return (
+          <Wrapper>
+            <ChartModal />
+          </Wrapper>
+        );
       case 'AboutGame':
         return (
           <Wrapper>
