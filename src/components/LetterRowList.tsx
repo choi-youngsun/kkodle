@@ -23,6 +23,8 @@ type AnswerProps = {
   setWordError: React.Dispatch<React.SetStateAction<string | null>>;
   isPictureMod: boolean;
   isModalOpen: boolean;
+  setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setModalType: React.Dispatch<React.SetStateAction<string>>;
   isThemeMod: boolean;
 };
 
@@ -44,6 +46,8 @@ export default function LetterRowList({
   isPictureMod,
   isModalOpen,
   isThemeMod,
+  setIsModalOpen,
+  setModalType,
 }: AnswerProps) {
   const [isAnswer, setIsAnswer] = useState(false);
 
@@ -73,8 +77,12 @@ export default function LetterRowList({
         // 업데이트된 결과를 로컬 스토리지에 저장
         localStorage.setItem('gameResults', JSON.stringify(existingResults));
       }
+
+      // 차트 모달 열기
+      setModalType('Chart'); // 차트 모달 타입 설정
+      setIsModalOpen(true); // 모달 열림 상태 업데이트
     }
-  }, [isAnswer, currentAttempt, answer]);
+  }, [isAnswer, currentAttempt, answer, setIsModalOpen, setModalType]);
 
   useEffect(() => {
     if (isAnswer || currentAttempt === MAX_GUESSES) {

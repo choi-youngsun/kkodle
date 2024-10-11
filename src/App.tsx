@@ -39,6 +39,7 @@ const SUPABASE_KEY = process.env.REACT_APP_SUPABASE_KEY!;
 export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 function App() {
+  const [modalType, setModalType] = useState('');
   const now = dayjs().format('YY-MM-DD HH:mm');
   const [isPictureMod, setIsPictureMod] = useState(false);
   const [isThemeMod, setIsThemeMod] = useState(false);
@@ -146,6 +147,8 @@ function App() {
           isModalOpen={isModalOpen}
           isThemeMod={isThemeMod}
           setIsModalOpen={setIsModalOpen}
+          modalType={modalType}
+          setModalType={setModalType}
         />
         <div>
           <LetterRowList
@@ -160,6 +163,8 @@ function App() {
             setWordError={setWordError}
             isPictureMod={isPictureMod}
             isModalOpen={isModalOpen}
+            setIsModalOpen={setIsModalOpen}
+            setModalType={setModalType}
             isThemeMod={isThemeMod}
           />
         </div>

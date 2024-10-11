@@ -13,6 +13,8 @@ interface ToolBarProps {
   isModalOpen: boolean;
   isThemeMod: boolean;
   setIsModalOpen: (isOpen: boolean) => void;
+  modalType: string;
+  setModalType: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const ToolBarContainer = styled.div`
@@ -69,8 +71,9 @@ function ToolBar({
   isModalOpen,
   isThemeMod,
   setIsModalOpen,
+  modalType,
+  setModalType,
 }: ToolBarProps) {
-  const [modalType, setModalType] = useState('');
   const handleOpen = (type: string) => {
     setIsModalOpen(true);
     setModalType(type);
