@@ -44,7 +44,6 @@ function App() {
   const [isPictureMod, setIsPictureMod] = useState(false);
   const [isThemeMod, setIsThemeMod] = useState(false);
 
-  console.log(isPictureMod, '픽쳐모드', isThemeMod, '테마모드');
   const handleSwitch = (mode: string) => () => {
     if (mode === 'PictureMod') {
       setIsPictureMod((prev) => !prev);
