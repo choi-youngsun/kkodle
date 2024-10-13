@@ -1,10 +1,12 @@
 import { alpha, styled } from '@mui/material/styles';
 import { pink } from '@mui/material/colors';
 import Switch from '@mui/material/Switch';
+import { ToggleSwitchProps } from '../App.tsx';
 
 interface ColorSwitchesProps {
   checked: boolean;
-  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  handleSwitch: ToggleSwitchProps['handleSwitch'];
+  mode: string;
 }
 
 const PinkSwitch = styled(Switch)(({ theme }) => ({
@@ -23,11 +25,16 @@ const label = { inputProps: { 'aria-label': 'Color switch demo' } };
 
 export default function ColorSwitches({
   checked,
-  onChange,
+  handleSwitch,
+  mode,
 }: ColorSwitchesProps) {
   return (
     <div>
-      <PinkSwitch {...label} checked={checked || false} onChange={onChange} />
+      <PinkSwitch
+        {...label}
+        checked={checked || false}
+        onChange={handleSwitch(mode)}
+      />
     </div>
   );
 }

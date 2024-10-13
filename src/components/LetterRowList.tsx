@@ -21,10 +21,11 @@ type AnswerProps = {
   setCurrentAttempt: React.Dispatch<React.SetStateAction<number>>;
   wordError: string | null;
   setWordError: React.Dispatch<React.SetStateAction<string | null>>;
-  isChecked: boolean;
+  isPictureMod: boolean;
   isModalOpen: boolean;
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setModalType: React.Dispatch<React.SetStateAction<string>>;
+  isThemeMod: boolean;
 };
 
 const MAX_LENGTH = 6;
@@ -42,8 +43,9 @@ export default function LetterRowList({
   setCurrentAttempt,
   wordError,
   setWordError,
-  isChecked,
+  isPictureMod,
   isModalOpen,
+  isThemeMod,
   setIsModalOpen,
   setModalType,
 }: AnswerProps) {
@@ -92,7 +94,6 @@ export default function LetterRowList({
     const handleKeyDown = (event: KeyboardEvent) => {
       if (isAnswer || isModalOpen) return;
       const key = event.key.toLowerCase();
-
       if (key === 'backspace') {
         // 백스페이스를 누르면 배열에서 마지막 글자 삭제
         setKeyArray((prevKeys) => prevKeys.slice(0, -1));
@@ -103,7 +104,6 @@ export default function LetterRowList({
           setWordError('글자 수가 모자랍니다!');
         } else if (currentAttempt <= MAX_LENGTH) {
           // 6글자일 때 엔터를 누르면 제출
-
           // guesses에 넣을 배열 추가
           const newGuess: Letter[] = keyArray.map((letter, index) => {
             let status: LetterStatus = 'default'; // 기본 상태
@@ -113,7 +113,6 @@ export default function LetterRowList({
             } else if (answer.includes(letter)) {
               status = 'ball'; // 정답에는 있지만 위치가 다른 경우
             }
-
             return { letter, status };
           });
 
@@ -174,7 +173,8 @@ export default function LetterRowList({
           <SubmitLetterRow
             key={generateUniqueKey()}
             inputValue={guess}
-            isChecked={isChecked}
+            isPictureMod={isPictureMod}
+            isThemeMod={isThemeMod}
           />
         ))}
       {/* 현재 입력 중인 행을 빈 행으로 표시 */}

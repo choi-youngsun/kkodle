@@ -4,6 +4,7 @@ import { supabase } from '../App.tsx';
 import { keyToJamoMap } from './keyToJamoMap.ts';
 import LetterRow from './LetterRow.tsx';
 import { ClickButton } from './ToolBar.tsx';
+import { ModalText, ModalTitle } from './TransitionsModal.tsx';
 
 export type UserInputArray = string[];
 
@@ -47,6 +48,9 @@ export default function BeakerModal() {
   }, [keyArray]);
   return (
     <div>
+      <ModalText>
+        <ModalTitle>개발자에게 단어 추천하기</ModalTitle>
+      </ModalText>
       <LetterRow inputValue={keyArray} />
       <ClickButton type="button" onClick={onClick}>
         제출
