@@ -39,8 +39,8 @@ const SUPABASE_KEY = process.env.REACT_APP_SUPABASE_KEY!;
 export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 function App() {
+  const now = dayjs().format('YYYY-MM-DD HH:mm');
   const [modalType, setModalType] = useState('');
-  const now = dayjs().format('YY-MM-DD HH:mm');
   const [isPictureMod, setIsPictureMod] = useState(false);
   const [isThemeMod, setIsThemeMod] = useState(false);
 
@@ -59,9 +59,6 @@ function App() {
     return savedTimeState ? JSON.parse(savedTimeState) : '';
   });
   const [gameState, setGameState] = useState<GameState>(() => {
-    if (now !== timeState) {
-      return { guesses: [], solution: '' };
-    }
     const savedGameState = JSON.parse(
       window.localStorage.getItem('gameState') || '{}'
     );
@@ -118,16 +115,22 @@ function App() {
   }, [guesses, gameState]);
 
   useEffect(() => {
-    // TODO: 테스트를 위해 임시 속성임, 추후 1시간 혹은 2시간으로 수정예정
+    const LocalTimeState = window.localStorage.getItem('timeState');
+    const newNow = dayjs();
+    const savedTimeState = dayjs(timeState);
+    const oneHourTimer = newNow.diff(savedTimeState, 'hour');
 
-    if (timeState !== now) {
+    if (!LocalTimeState) {
       setTimeState(now);
-    }
-
-    window.localStorage.setItem('timeState', JSON.stringify(now));
-    window.localStorage.setItem('gameState', JSON.stringify(gameState));
-    if (timeState !== now) {
+      window.localStorage.setItem('timeState', JSON.stringify(now));
       getRandomQuestion();
+      window.localStorage.setItem('gameState', JSON.stringify(gameState));
+    }
+    if (oneHourTimer) {
+      setTimeState(now);
+      window.localStorage.setItem('timeState', JSON.stringify(now));
+      getRandomQuestion();
+      window.localStorage.setItem('gameState', JSON.stringify(gameState));
     }
   }, [timeState, gameState, getRandomQuestion, now]);
 
