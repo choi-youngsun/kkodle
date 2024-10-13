@@ -11,5 +11,5 @@
   "endOfLine": "auto",
   "bracketSameLine": false,
   "bracketSpacing": true,
-  "jsxSingleQuote": false,
+  "jsxSingleQuote": false
 }
