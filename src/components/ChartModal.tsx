@@ -1,7 +1,13 @@
+import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
 import styled from 'styled-components';
 import ChartBar from './ChartBar.tsx';
 import CountToPercent from './CountToPercent.ts';
 import CalculateResult from './CalculateResult.ts';
+import useCountDownTimer from '../useCountDownTimer.ts';
+
+// 플러그인 추가
+dayjs.extend(customParseFormat);
 
 const StyledMainSection = styled.div``;
 
@@ -110,7 +116,15 @@ const resultStats = CalculateResult(gameResult);
 const attemptCountsArray = Object.values(resultStats.attemptCounts);
 const percentageArray = CountToPercent(attemptCountsArray);
 
+// 새문제 남은 시간 관련 변수
+const savedTimeState = window.localStorage.getItem('timeState');
+const newTimeState = dayjs(savedTimeState, 'YYYY-MM-DD HH:mm');
+const targetTime = newTimeState
+  ? dayjs(newTimeState).add(1, 'hour').format('YYYY-MM-DD HH:mm')
+  : '';
+
 export default function ChartModal() {
+  const { remainingTime } = useCountDownTimer(targetTime);
   return (
     <StyledMainSection>
       <StyledTitle>통계</StyledTitle>
@@ -144,7 +158,7 @@ export default function ChartModal() {
       <StyleBottomSection>
         <StyledTimeSection>
           <StyledTimeText>새로운 문제까지</StyledTimeText>
-          <StyledTimeNumber>09:13:30</StyledTimeNumber>
+          <StyledTimeNumber>{remainingTime}</StyledTimeNumber>
         </StyledTimeSection>
         <StyledButton type="button">결과 복사</StyledButton>
       </StyleBottomSection>
