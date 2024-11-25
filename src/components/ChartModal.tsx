@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import styled from 'styled-components';
+import { useEffect, useState } from 'react';
 import ChartBar from './ChartBar.tsx';
 import CountToPercent from './CountToPercent.ts';
 import CalculateResult from './CalculateResult.ts';
@@ -99,32 +100,6 @@ type GameResult = {
   answer: string[];
 };
 
-// 게임 누적 결과를 로컬 스토리지에서 가져옴
-const storedGameResult = localStorage.getItem('gameResults');
-let gameResult: GameResult[] = [];
-
-if (storedGameResult) {
-  try {
-    // localStorage에서 가져온 값을 JSON.parse()로 배열로 변환
-    gameResult = JSON.parse(storedGameResult);
-  } catch (error) {
-    console.error('Failed to parse gameResult from localStorage:', error);
-  }
-}
-
-const generateUniqueKey = () => crypto.randomUUID();
-const resultStats = CalculateResult(gameResult);
-// attemptCounts의 값만 배열로 변환
-const attemptCountsArray = Object.values(resultStats.attemptCounts);
-const percentageArray = CountToPercent(attemptCountsArray);
-
-// 새문제 남은 시간 관련 변수
-const savedTimeState = window.localStorage.getItem('timeState');
-const newTimeState = dayjs(savedTimeState, 'YYYY-MM-DD HH:mm');
-const targetTime = newTimeState
-  ? dayjs(newTimeState).add(1, 'hour').format('YYYY-MM-DD HH:mm')
-  : '';
-
 export default function ChartModal() {
   const {
     isSnackBarOpen,
@@ -133,6 +108,38 @@ export default function ChartModal() {
     setIsSnackBarOpen,
     handleCopyClick,
   } = useClipboardCopy();
+
+  const [gameResults, setGameResults] = useState<GameResult[]>([]);
+
+  // 로컬 스토리지에서 데이터를 불러오는 함수
+  const fetchGameResults = () => {
+    const storedGameResult = localStorage.getItem('gameResults');
+    if (storedGameResult) {
+      try {
+        setGameResults(JSON.parse(storedGameResult));
+      } catch (error) {
+        console.error('Failed to parse gameResult from localStorage:', error);
+      }
+    }
+  };
+
+  // 컴포넌트가 처음 렌더링될 때 로컬 스토리지 데이터를 불러옴
+  useEffect(() => {
+    fetchGameResults();
+  }, []);
+
+  const generateUniqueKey = () => crypto.randomUUID();
+  const resultStats = CalculateResult(gameResults);
+  // attemptCounts의 값만 배열로 변환
+  const attemptCountsArray = Object.values(resultStats.attemptCounts);
+  const percentageArray = CountToPercent(attemptCountsArray);
+
+  // 새문제 남은 시간 관련 변수
+  const savedTimeState = window.localStorage.getItem('timeState');
+  const newTimeState = dayjs(savedTimeState, 'YYYY-MM-DD HH:mm');
+  const targetTime = newTimeState
+    ? dayjs(newTimeState).add(1, 'hour').format('YYYY-MM-DD HH:mm')
+    : '';
 
   const { remainingTime } = useCountDownTimer(targetTime);
 

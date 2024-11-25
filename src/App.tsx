@@ -39,6 +39,7 @@ const SUPABASE_KEY = process.env.REACT_APP_SUPABASE_KEY!;
 export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 function App() {
+  console.log('Supabase Key:', SUPABASE_KEY);
   const now = dayjs().format('YYYY-MM-DD HH:mm');
   const [modalType, setModalType] = useState('');
   const [isPictureMod, setIsPictureMod] = useState(false);
@@ -64,7 +65,7 @@ function App() {
     );
     return savedGameState.solution
       ? savedGameState
-      : { guesses: [], solution: '' };
+      : { guesses: [], solution: ['ㅇ', 'ㅏ', 'ㄴ', 'ㄱ', 'ㅕ', 'ㅇ'] };
   });
 
   const [guesses, setGuesses] = useState<Letter[][]>(gameState.guesses);
