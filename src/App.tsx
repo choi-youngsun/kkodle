@@ -65,7 +65,7 @@ function App() {
     );
     return savedGameState.solution
       ? savedGameState
-      : { guesses: [], solution: ['ㅇ', 'ㅏ', 'ㄴ', 'ㄱ', 'ㅕ', 'ㅇ'] };
+      : { guesses: [], solution: ['ㅇ', 'ㅏ', 'ㄴ', 'ㄴ', 'ㅕ', 'ㅇ'] };
   });
 
   const [guesses, setGuesses] = useState<Letter[][]>(gameState.guesses);

@@ -36,6 +36,7 @@ export default function useClipboardCopy(
     isSnackBarOpen,
     setIsSnackBarOpen,
     snackBarMessage,
+    setSnackBarMessage,
     snackBarType,
     handleCopyClick,
   };
