@@ -85,10 +85,10 @@ export default function LetterRowList({
   }, [isAnswer, currentAttempt, answer, setIsModalOpen, setModalType]);
 
   useEffect(() => {
-    if (isAnswer || currentAttempt === MAX_GUESSES) {
+    if (isAnswer) {
       handleGameEnd();
     }
-  }, [isAnswer, currentAttempt, handleGameEnd]);
+  }, [isAnswer, handleGameEnd]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -123,7 +123,6 @@ export default function LetterRowList({
           ) {
             setIsAnswer(true); // 정답을 맞춘 경우
             setWordError(`축하합니다! 정답은 ${answer}입니다.`);
-            handleGameEnd();
           } else {
             setCurrentAttempt((prevAttempt) => prevAttempt + 1);
             setKeyArray([]);
