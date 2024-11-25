@@ -3,6 +3,8 @@
 서비스 링크: https://kkodlekkodle.vercel.app/
 
 워들의 한국어 버전, 꼬들의 클론 프로젝트인 꼬들꼬들입니다.
+<br />
+<br />
 
 ## 팀원 소개
 |<img src="https://github.com/user-attachments/assets/a9d50546-e01a-4944-8699-e3f0d37efdf5" width="150" height="150"/>|<img src="https://github.com/user-attachments/assets/c9b9c74d-f20d-48ef-99d5-f031207d00db" width="150" height="150"/>|
