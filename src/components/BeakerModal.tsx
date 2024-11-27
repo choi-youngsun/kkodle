@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { supabase } from '../App.tsx';
-import { keyToJamoMap } from './keyToJamoMap.ts';
+import { keyToJamoMap } from '../utils/keyToJamoMap.ts';
 import LetterRow from './LetterRow.tsx';
 import { ClickButton } from './ToolBar.tsx';
 import { ModalText, ModalTitle } from './TransitionsModal.tsx';

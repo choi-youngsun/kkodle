@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import KeyCard from './KeyCard.tsx';
-import { updateKeyStatus } from './updateKeyStatus.ts';
+import { updateKeyStatus } from '../utils/updateKeyStatus.ts';
 import { Letter } from './LetterRowList.tsx';
 
 type AnswerProps = {

@@ -8,7 +8,7 @@ import styled from 'styled-components';
 import ToolBar from './components/ToolBar.tsx';
 import LetterRowList from './components/LetterRowList.tsx';
 import Keyboard from './components/Keyboard.tsx';
-import ResultToEmoji from './components/ResultToEmoji.ts';
+import ResultToEmoji from './utils/ResultToEmoji.ts';
 
 const SUPABASE_URL = 'https://yznhshnhrfruzomamffs.supabase.co';
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

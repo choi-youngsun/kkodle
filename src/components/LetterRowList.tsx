@@ -1,6 +1,6 @@
 import { toast } from 'react-toastify';
 import { useCallback, useEffect, useState } from 'react';
-import { keyToJamoMap } from './keyToJamoMap.ts';
+import { keyToJamoMap } from '../utils/keyToJamoMap.ts';
 import LetterRow from './LetterRow.tsx';
 import SubmitLetterRow from './SubmitLetterRow.tsx';
 import Snackbar from './SnackBar.tsx';
