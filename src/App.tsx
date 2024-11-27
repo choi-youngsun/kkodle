@@ -32,6 +32,7 @@ export type ToggleSwitchProps = {
 interface GameState {
   guesses: Letter[][];
   solution: string[];
+  isDone: boolean; // 정답 여부를 저장
 }
 
 const StyledMainContainer = styled.div`
@@ -55,11 +56,21 @@ function App() {
     const savedGameState = JSON.parse(
       window.localStorage.getItem('gameState') || '{}'
     );
+
     return savedGameState.solution
-      ? savedGameState
-      : { guesses: [], solution: ['ㅇ', 'ㅏ', 'ㄴ', 'ㄴ', 'ㅕ', 'ㅇ'] };
+      ? {
+          ...savedGameState,
+          isDone: savedGameState.isDone ?? false, // 기존 값이 없으면 기본값으로 false 설정
+        }
+      : {
+          guesses: [],
+          solution: ['ㅇ', 'ㅏ', 'ㄴ', 'ㄴ', 'ㅕ', 'ㅇ'],
+          isDone: false,
+        }; // 새 게임 초기값
   });
+
   const [guesses, setGuesses] = useState<Letter[][]>(gameState.guesses);
+  const [isDone, setIsDone] = useState(gameState.isDone);
   const [currentAttempt, setCurrentAttempt] = useState<number>(() => {
     const savedGuesses = gameState.guesses;
     return savedGuesses ? savedGuesses.length + 1 : 1;
@@ -104,12 +115,13 @@ function App() {
       const newGameState = {
         ...gameState,
         guesses,
+        isDone,
       };
       window.localStorage.setItem('gameState', JSON.stringify(newGameState));
     };
 
     saveGameState();
-  }, [guesses, gameState]);
+  }, [guesses, gameState, isDone]);
 
   useEffect(() => {
     const LocalTimeState = window.localStorage.getItem('timeState');
@@ -126,6 +138,7 @@ function App() {
         setGameState(() => ({
           guesses: [],
           solution: questionText,
+          isDone: false,
         }));
       };
       updateGameState();
@@ -138,6 +151,7 @@ function App() {
         setGameState(() => ({
           guesses: [],
           solution: questionText,
+          isDone: false,
         }));
         setGuesses([]);
         setCurrentAttempt(1);
@@ -146,6 +160,7 @@ function App() {
           JSON.stringify({
             guesses: [],
             solution: questionText,
+            isDone: false,
           })
         );
         setTimeState(now);
@@ -176,6 +191,8 @@ function App() {
         <div>
           <LetterRowList
             answer={gameState.solution}
+            isDone={isDone}
+            setIsDone={setIsDone}
             keyArray={keyArray}
             setKeyArray={setKeyArray}
             guesses={guesses}
