@@ -9,6 +9,7 @@ import ToolBar from './components/ToolBar.tsx';
 import LetterRowList from './components/LetterRowList.tsx';
 import Keyboard from './components/Keyboard.tsx';
 import ResultToEmoji from './utils/ResultToEmoji.ts';
+import getLocalRandomQuestion from './utils/getLocalRandomQuestion.ts';
 
 const SUPABASE_URL = 'https://yznhshnhrfruzomamffs.supabase.co';
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -43,15 +44,22 @@ const StyledMainContainer = styled.div`
 
 function App() {
   const now = dayjs().format('YYYY-MM-DD HH:mm');
+
   const [modalType, setModalType] = useState('');
+
   const [isPictureMod, setIsPictureMod] = useState(false);
   const [isThemeMod, setIsThemeMod] = useState(false);
+
   const [keyArray, setKeyArray] = useState<string[]>([]);
   const [wordError, setWordError] = useState<string | null>(null);
+
   const [timeState, setTimeState] = useState<string>(() => {
     const savedTimeState = window.localStorage.getItem('timeState');
     return savedTimeState ? JSON.parse(savedTimeState) : '';
   });
+
+  const randomSolution = getLocalRandomQuestion();
+
   const [gameState, setGameState] = useState<GameState>(() => {
     const savedGameState = JSON.parse(
       window.localStorage.getItem('gameState') || '{}'
@@ -64,7 +72,7 @@ function App() {
         }
       : {
           guesses: [],
-          solution: ['ㅇ', 'ㅏ', 'ㄴ', 'ㄴ', 'ㅕ', 'ㅇ'],
+          solution: randomSolution,
           isDone: false,
         }; // 새 게임 초기값
   });
@@ -91,8 +99,10 @@ function App() {
       if (attempt > MAX_ATTEMPTS) return;
       const { data, error } = await supabase.rpc('get_random_question');
       if (error) {
-        toast('질문을 가져오는 중 오류 발생:');
-        return;
+        // 오류 발생 시 기본 랜덤 문제를 반환하도록 처리
+        toast('질문을 가져오는 중 오류 발생, 기본 랜덤 문제를 사용합니다.');
+        const randomQuestion = getLocalRandomQuestion(); // 여기서 기본 랜덤 문제를 호출
+        return randomQuestion;
       }
 
       const questionText = data[0]?.question;
