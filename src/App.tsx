@@ -10,11 +10,11 @@ import LetterRowList from './components/LetterRowList.tsx';
 import Keyboard from './components/Keyboard.tsx';
 import ResultToEmoji from './components/ResultToEmoji.ts';
 
-const StyledMainContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`;
+const SUPABASE_URL = 'https://yznhshnhrfruzomamffs.supabase.co';
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+const SUPABASE_KEY = process.env.REACT_APP_SUPABASE_KEY!;
+
+export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 export type LetterStatus = 'default' | 'ball' | 'strike' | 'error';
 
@@ -22,10 +22,6 @@ export type Letter = {
   letter: string;
   status: LetterStatus;
 };
-interface GameState {
-  guesses: Letter[][];
-  solution: string[];
-}
 
 export type SetUserInputQuestion = (input: string[]) => void;
 
@@ -33,27 +29,23 @@ export type ToggleSwitchProps = {
   handleSwitch: (mode: string) => () => void;
 };
 
-const SUPABASE_URL = 'https://yznhshnhrfruzomamffs.supabase.co';
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-const SUPABASE_KEY = process.env.REACT_APP_SUPABASE_KEY!;
-export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+interface GameState {
+  guesses: Letter[][];
+  solution: string[];
+}
+
+const StyledMainContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
 
 function App() {
-  console.log('Supabase Key:', SUPABASE_KEY);
   const now = dayjs().format('YYYY-MM-DD HH:mm');
   const [modalType, setModalType] = useState('');
   const [isPictureMod, setIsPictureMod] = useState(false);
   const [isThemeMod, setIsThemeMod] = useState(false);
-
-  const handleSwitch = (mode: string) => () => {
-    if (mode === 'PictureMod') {
-      setIsPictureMod((prev) => !prev);
-    } else if (mode === 'ThemeMod') {
-      setIsThemeMod((prev) => !prev);
-    }
-  };
   const [keyArray, setKeyArray] = useState<string[]>([]);
-
   const [wordError, setWordError] = useState<string | null>(null);
   const [timeState, setTimeState] = useState<string>(() => {
     const savedTimeState = window.localStorage.getItem('timeState');
@@ -67,13 +59,20 @@ function App() {
       ? savedGameState
       : { guesses: [], solution: ['ㅇ', 'ㅏ', 'ㄴ', 'ㄴ', 'ㅕ', 'ㅇ'] };
   });
-
   const [guesses, setGuesses] = useState<Letter[][]>(gameState.guesses);
   const [currentAttempt, setCurrentAttempt] = useState<number>(() => {
     const savedGuesses = gameState.guesses;
     return savedGuesses ? savedGuesses.length + 1 : 1;
   }); // 현재 몇 번째 시도인지
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleSwitch = (mode: string) => () => {
+    if (mode === 'PictureMod') {
+      setIsPictureMod((prev) => !prev);
+    } else if (mode === 'ThemeMod') {
+      setIsThemeMod((prev) => !prev);
+    }
+  };
 
   const getRandomQuestion = useCallback(
     async (attempt = 1) => {
@@ -89,10 +88,7 @@ function App() {
       if (questionText === gameState.solution) {
         setTimeout(() => getRandomQuestion(attempt + 1), 1000);
       } else {
-        setGameState((prevState) => ({
-          ...prevState,
-          solution: questionText,
-        }));
+        return questionText;
       }
     },
     [gameState.solution]
@@ -121,19 +117,43 @@ function App() {
     const savedTimeState = dayjs(timeState);
     const oneHourTimer = newNow.diff(savedTimeState, 'hour');
 
+    // 첫 접속 시 데이터 관리 로직
     if (!LocalTimeState) {
       setTimeState(now);
       window.localStorage.setItem('timeState', JSON.stringify(now));
-      getRandomQuestion();
-      window.localStorage.setItem('gameState', JSON.stringify(gameState));
+      const updateGameState = async () => {
+        const questionText = await getRandomQuestion();
+        setGameState(() => ({
+          guesses: [],
+          solution: questionText,
+        }));
+      };
+      updateGameState();
     }
-    if (oneHourTimer) {
-      setTimeState(now);
-      window.localStorage.setItem('timeState', JSON.stringify(now));
-      getRandomQuestion();
-      window.localStorage.setItem('gameState', JSON.stringify(gameState));
+
+    // 1시간 경과 후 데이터 관리 로직
+    if (oneHourTimer > 0) {
+      const updateGameState = async () => {
+        const questionText = await getRandomQuestion();
+        setGameState(() => ({
+          guesses: [],
+          solution: questionText,
+        }));
+        setGuesses([]);
+        setCurrentAttempt(1);
+        window.localStorage.setItem(
+          'gameState',
+          JSON.stringify({
+            guesses: [],
+            solution: questionText,
+          })
+        );
+        setTimeState(now);
+        window.localStorage.setItem('timeState', JSON.stringify(now));
+      };
+      updateGameState();
     }
-  }, [timeState, gameState, getRandomQuestion, now]);
+  }, [timeState, now, getRandomQuestion, gameState]);
 
   return (
     <div>
