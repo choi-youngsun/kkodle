@@ -3,9 +3,9 @@ import customParseFormat from 'dayjs/plugin/customParseFormat';
 import styled from 'styled-components';
 import { useEffect, useState } from 'react';
 import ChartBar from './ChartBar.tsx';
-import CountToPercent from './CountToPercent.ts';
-import CalculateResult from './CalculateResult.ts';
-import useCountDownTimer from '../useCountDownTimer.ts';
+import CountToPercent from '../utils/CountToPercent.ts';
+import CalculateResult from '../utils/CalculateResult.ts';
+import useCountDownTimer from '../hooks/useCountDownTimer.ts';
 import Snackbar from './SnackBar.tsx';
 import useClipboardCopy from '../hooks/useClipboardCopy.ts';
 

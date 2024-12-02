@@ -8,7 +8,8 @@ import styled from 'styled-components';
 import ToolBar from './components/ToolBar.tsx';
 import LetterRowList from './components/LetterRowList.tsx';
 import Keyboard from './components/Keyboard.tsx';
-import ResultToEmoji from './components/ResultToEmoji.ts';
+import ResultToEmoji from './utils/ResultToEmoji.ts';
+import getLocalRandomQuestion from './utils/getLocalRandomQuestion.ts';
 
 const SUPABASE_URL = 'https://yznhshnhrfruzomamffs.supabase.co';
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -32,6 +33,7 @@ export type ToggleSwitchProps = {
 interface GameState {
   guesses: Letter[][];
   solution: string[];
+  isDone: boolean; // 정답 여부를 저장
 }
 
 const StyledMainContainer = styled.div`
@@ -42,24 +44,41 @@ const StyledMainContainer = styled.div`
 
 function App() {
   const now = dayjs().format('YYYY-MM-DD HH:mm');
+
   const [modalType, setModalType] = useState('');
+
   const [isPictureMod, setIsPictureMod] = useState(false);
   const [isThemeMod, setIsThemeMod] = useState(false);
+
   const [keyArray, setKeyArray] = useState<string[]>([]);
   const [wordError, setWordError] = useState<string | null>(null);
+
   const [timeState, setTimeState] = useState<string>(() => {
     const savedTimeState = window.localStorage.getItem('timeState');
     return savedTimeState ? JSON.parse(savedTimeState) : '';
   });
+
+  const randomSolution = getLocalRandomQuestion();
+
   const [gameState, setGameState] = useState<GameState>(() => {
     const savedGameState = JSON.parse(
       window.localStorage.getItem('gameState') || '{}'
     );
+
     return savedGameState.solution
-      ? savedGameState
-      : { guesses: [], solution: ['ㅇ', 'ㅏ', 'ㄴ', 'ㄴ', 'ㅕ', 'ㅇ'] };
+      ? {
+          ...savedGameState,
+          isDone: savedGameState.isDone ?? false, // 기존 값이 없으면 기본값으로 false 설정
+        }
+      : {
+          guesses: [],
+          solution: randomSolution,
+          isDone: false,
+        }; // 새 게임 초기값
   });
+
   const [guesses, setGuesses] = useState<Letter[][]>(gameState.guesses);
+  const [isDone, setIsDone] = useState(gameState.isDone);
   const [currentAttempt, setCurrentAttempt] = useState<number>(() => {
     const savedGuesses = gameState.guesses;
     return savedGuesses ? savedGuesses.length + 1 : 1;
@@ -80,8 +99,10 @@ function App() {
       if (attempt > MAX_ATTEMPTS) return;
       const { data, error } = await supabase.rpc('get_random_question');
       if (error) {
-        toast('질문을 가져오는 중 오류 발생:');
-        return;
+        // 오류 발생 시 기본 랜덤 문제를 반환하도록 처리
+        toast('질문을 가져오는 중 오류 발생, 기본 랜덤 문제를 사용합니다.');
+        const randomQuestion = getLocalRandomQuestion(); // 여기서 기본 랜덤 문제를 호출
+        return randomQuestion;
       }
 
       const questionText = data[0]?.question;
@@ -104,12 +125,13 @@ function App() {
       const newGameState = {
         ...gameState,
         guesses,
+        isDone,
       };
       window.localStorage.setItem('gameState', JSON.stringify(newGameState));
     };
 
     saveGameState();
-  }, [guesses, gameState]);
+  }, [guesses, gameState, isDone]);
 
   useEffect(() => {
     const LocalTimeState = window.localStorage.getItem('timeState');
@@ -126,6 +148,7 @@ function App() {
         setGameState(() => ({
           guesses: [],
           solution: questionText,
+          isDone: false,
         }));
       };
       updateGameState();
@@ -138,6 +161,7 @@ function App() {
         setGameState(() => ({
           guesses: [],
           solution: questionText,
+          isDone: false,
         }));
         setGuesses([]);
         setCurrentAttempt(1);
@@ -146,6 +170,7 @@ function App() {
           JSON.stringify({
             guesses: [],
             solution: questionText,
+            isDone: false,
           })
         );
         setTimeState(now);
@@ -176,6 +201,8 @@ function App() {
         <div>
           <LetterRowList
             answer={gameState.solution}
+            isDone={isDone}
+            setIsDone={setIsDone}
             keyArray={keyArray}
             setKeyArray={setKeyArray}
             guesses={guesses}
