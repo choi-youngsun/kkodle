@@ -98,7 +98,6 @@ function App() {
       const MAX_ATTEMPTS = 3;
       if (attempt > MAX_ATTEMPTS) return;
       const { data, error } = await supabase.rpc('get_random_question');
-      console.log(error);
       if (error) {
         // 오류 발생 시 기본 랜덤 문제를 반환하도록 처리
         toast('질문을 가져오는 중 오류 발생, 기본 랜덤 문제를 사용합니다.');
