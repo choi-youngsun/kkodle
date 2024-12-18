@@ -142,6 +142,7 @@ function App() {
     // 첫 접속 시 데이터 관리 로직
     if (!LocalTimeState) {
       setTimeState(now);
+      setIsDone(false);
       window.localStorage.setItem('timeState', JSON.stringify(now));
       const updateGameState = async () => {
         const questionText = await getRandomQuestion();
@@ -158,6 +159,7 @@ function App() {
     if (oneHourTimer > 0) {
       const updateGameState = async () => {
         const questionText = await getRandomQuestion();
+        setIsDone(false);
         setGameState(() => ({
           guesses: [],
           solution: questionText,
