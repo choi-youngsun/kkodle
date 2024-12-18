@@ -1,8 +1,10 @@
 import { toast } from 'react-toastify';
 import { useCallback, useEffect, useState } from 'react';
-import { keyToJamoMap } from './keyToJamoMap.ts';
+import { keyToJamoMap } from '../utils/keyToJamoMap.ts';
 import LetterRow from './LetterRow.tsx';
 import SubmitLetterRow from './SubmitLetterRow.tsx';
+import Snackbar from './SnackBar.tsx';
+import useClipboardCopy from '../hooks/useClipboardCopy.ts';
 
 export type LetterStatus = 'default' | 'ball' | 'strike' | 'error';
 
@@ -26,6 +28,8 @@ type AnswerProps = {
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setModalType: React.Dispatch<React.SetStateAction<string>>;
   isThemeMod: boolean;
+  isDone: boolean;
+  setIsDone: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const MAX_LENGTH = 6;
@@ -38,6 +42,8 @@ export default function LetterRowList({
   keyArray,
   setKeyArray,
   guesses,
+  isDone,
+  setIsDone,
   setGuesses,
   currentAttempt,
   setCurrentAttempt,
@@ -49,6 +55,15 @@ export default function LetterRowList({
   setIsModalOpen,
   setModalType,
 }: AnswerProps) {
+  const {
+    isSnackBarOpen,
+    snackBarMessage,
+    setSnackBarMessage,
+    snackBarType,
+    setIsSnackBarOpen,
+    showSnackbar,
+  } = useClipboardCopy();
+
   const [isAnswer, setIsAnswer] = useState(false);
 
   const handleGameEnd = useCallback(() => {
@@ -85,10 +100,10 @@ export default function LetterRowList({
   }, [isAnswer, currentAttempt, answer, setIsModalOpen, setModalType]);
 
   useEffect(() => {
-    if (isAnswer || currentAttempt === MAX_GUESSES) {
+    if (isAnswer) {
       handleGameEnd();
     }
-  }, [isAnswer, currentAttempt, handleGameEnd]);
+  }, [isAnswer, handleGameEnd]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -122,8 +137,11 @@ export default function LetterRowList({
             newGuess.every((letter, index) => letter.letter === answer[index])
           ) {
             setIsAnswer(true); // 정답을 맞춘 경우
-            setWordError(`축하합니다! 정답은 ${answer}입니다.`);
-            handleGameEnd();
+            setIsDone(true); // 게임 끝
+            showSnackbar(
+              `축하합니다. 오늘의 정답은 ${answer}입니다!`,
+              'success'
+            );
           } else {
             setCurrentAttempt((prevAttempt) => prevAttempt + 1);
             setKeyArray([]);
@@ -151,6 +169,8 @@ export default function LetterRowList({
     };
   }, [
     keyArray,
+    setSnackBarMessage,
+    showSnackbar,
     currentAttempt,
     answer,
     setKeyArray,
@@ -161,6 +181,7 @@ export default function LetterRowList({
     isAnswer,
     isModalOpen,
     handleGameEnd,
+    setIsDone,
   ]);
 
   useEffect(() => {
@@ -168,21 +189,28 @@ export default function LetterRowList({
   }, [wordError]);
   return (
     <div>
-      {!isAnswer &&
-        guesses.map((guess) => (
-          <SubmitLetterRow
-            key={generateUniqueKey()}
-            inputValue={guess}
-            isPictureMod={isPictureMod}
-            isThemeMod={isThemeMod}
-          />
-        ))}
+      <Snackbar
+        message={snackBarMessage}
+        type={snackBarType}
+        isVisible={isSnackBarOpen}
+        onClose={() => setIsSnackBarOpen(false)}
+      />
+      {guesses.map((guess) => (
+        <SubmitLetterRow
+          key={generateUniqueKey()}
+          inputValue={guess}
+          isPictureMod={isPictureMod}
+          isThemeMod={isThemeMod}
+        />
+      ))}
       {/* 현재 입력 중인 행을 빈 행으로 표시 */}
-      {!isAnswer && currentAttempt <= 6 && (
+      {!isDone && currentAttempt <= 6 && (
         <LetterRow inputValue={keyArray} isError={!!wordError} />
       )}
       {/* 빈 행 렌더링 */}
-      {Array.from({ length: MAX_GUESSES - guesses.length - 1 }).map(() => (
+      {Array.from({
+        length: MAX_GUESSES - guesses.length - (isDone ? 0 : 1),
+      }).map(() => (
         <LetterRow key={generateUniqueKey()} inputValue={[]} />
       ))}
     </div>

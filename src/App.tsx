@@ -8,13 +8,14 @@ import styled from 'styled-components';
 import ToolBar from './components/ToolBar.tsx';
 import LetterRowList from './components/LetterRowList.tsx';
 import Keyboard from './components/Keyboard.tsx';
-import ResultToEmoji from './components/ResultToEmoji.ts';
+import ResultToEmoji from './utils/ResultToEmoji.ts';
+import getLocalRandomQuestion from './utils/getLocalRandomQuestion.ts';
 
-const StyledMainContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`;
+const SUPABASE_URL = 'https://yznhshnhrfruzomamffs.supabase.co';
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+const SUPABASE_KEY = process.env.REACT_APP_SUPABASE_KEY!;
+
+export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 export type LetterStatus = 'default' | 'ball' | 'strike' | 'error';
 
@@ -22,10 +23,6 @@ export type Letter = {
   letter: string;
   status: LetterStatus;
 };
-interface GameState {
-  guesses: Letter[][];
-  solution: string[];
-}
 
 export type SetUserInputQuestion = (input: string[]) => void;
 
@@ -33,16 +30,60 @@ export type ToggleSwitchProps = {
   handleSwitch: (mode: string) => () => void;
 };
 
-const SUPABASE_URL = 'https://yznhshnhrfruzomamffs.supabase.co';
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-const SUPABASE_KEY = process.env.REACT_APP_SUPABASE_KEY!;
-export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+interface GameState {
+  guesses: Letter[][];
+  solution: string[];
+  isDone: boolean; // 정답 여부를 저장
+}
+
+const StyledMainContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
 
 function App() {
+  const now = dayjs().format('YYYY-MM-DD HH:mm');
+
   const [modalType, setModalType] = useState('');
-  const now = dayjs().format('YY-MM-DD HH:mm');
+
   const [isPictureMod, setIsPictureMod] = useState(false);
   const [isThemeMod, setIsThemeMod] = useState(false);
+
+  const [keyArray, setKeyArray] = useState<string[]>([]);
+  const [wordError, setWordError] = useState<string | null>(null);
+
+  const [timeState, setTimeState] = useState<string>(() => {
+    const savedTimeState = window.localStorage.getItem('timeState');
+    return savedTimeState ? JSON.parse(savedTimeState) : '';
+  });
+
+  const randomSolution = getLocalRandomQuestion();
+
+  const [gameState, setGameState] = useState<GameState>(() => {
+    const savedGameState = JSON.parse(
+      window.localStorage.getItem('gameState') || '{}'
+    );
+
+    return savedGameState.solution
+      ? {
+          ...savedGameState,
+          isDone: savedGameState.isDone ?? false, // 기존 값이 없으면 기본값으로 false 설정
+        }
+      : {
+          guesses: [],
+          solution: randomSolution,
+          isDone: false,
+        }; // 새 게임 초기값
+  });
+
+  const [guesses, setGuesses] = useState<Letter[][]>(gameState.guesses);
+  const [isDone, setIsDone] = useState(gameState.isDone);
+  const [currentAttempt, setCurrentAttempt] = useState<number>(() => {
+    const savedGuesses = gameState.guesses;
+    return savedGuesses ? savedGuesses.length + 1 : 1;
+  }); // 현재 몇 번째 시도인지
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleSwitch = (mode: string) => () => {
     if (mode === 'PictureMod') {
@@ -51,31 +92,6 @@ function App() {
       setIsThemeMod((prev) => !prev);
     }
   };
-  const [keyArray, setKeyArray] = useState<string[]>([]);
-
-  const [wordError, setWordError] = useState<string | null>(null);
-  const [timeState, setTimeState] = useState<string>(() => {
-    const savedTimeState = window.localStorage.getItem('timeState');
-    return savedTimeState ? JSON.parse(savedTimeState) : '';
-  });
-  const [gameState, setGameState] = useState<GameState>(() => {
-    if (now !== timeState) {
-      return { guesses: [], solution: '' };
-    }
-    const savedGameState = JSON.parse(
-      window.localStorage.getItem('gameState') || '{}'
-    );
-    return savedGameState.solution
-      ? savedGameState
-      : { guesses: [], solution: '' };
-  });
-
-  const [guesses, setGuesses] = useState<Letter[][]>(gameState.guesses);
-  const [currentAttempt, setCurrentAttempt] = useState<number>(() => {
-    const savedGuesses = gameState.guesses;
-    return savedGuesses ? savedGuesses.length + 1 : 1;
-  }); // 현재 몇 번째 시도인지
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const getRandomQuestion = useCallback(
     async (attempt = 1) => {
@@ -83,18 +99,17 @@ function App() {
       if (attempt > MAX_ATTEMPTS) return;
       const { data, error } = await supabase.rpc('get_random_question');
       if (error) {
-        toast('질문을 가져오는 중 오류 발생:');
-        return;
+        // 오류 발생 시 기본 랜덤 문제를 반환하도록 처리
+        toast('질문을 가져오는 중 오류 발생, 기본 랜덤 문제를 사용합니다.');
+        const randomQuestion = getLocalRandomQuestion(); // 여기서 기본 랜덤 문제를 호출
+        return randomQuestion;
       }
 
       const questionText = data[0]?.question;
       if (questionText === gameState.solution) {
         setTimeout(() => getRandomQuestion(attempt + 1), 1000);
       } else {
-        setGameState((prevState) => ({
-          ...prevState,
-          solution: questionText,
-        }));
+        return questionText;
       }
     },
     [gameState.solution]
@@ -110,26 +125,62 @@ function App() {
       const newGameState = {
         ...gameState,
         guesses,
+        isDone,
       };
       window.localStorage.setItem('gameState', JSON.stringify(newGameState));
     };
 
     saveGameState();
-  }, [guesses, gameState]);
+  }, [guesses, gameState, isDone]);
 
   useEffect(() => {
-    // TODO: 테스트를 위해 임시 속성임, 추후 1시간 혹은 2시간으로 수정예정
+    const LocalTimeState = window.localStorage.getItem('timeState');
+    const newNow = dayjs();
+    const savedTimeState = dayjs(timeState);
+    const oneHourTimer = newNow.diff(savedTimeState, 'hour');
 
-    if (timeState !== now) {
+    // 첫 접속 시 데이터 관리 로직
+    if (!LocalTimeState) {
       setTimeState(now);
+      setIsDone(false);
+      window.localStorage.setItem('timeState', JSON.stringify(now));
+      const updateGameState = async () => {
+        const questionText = await getRandomQuestion();
+        setGameState(() => ({
+          guesses: [],
+          solution: questionText,
+          isDone: false,
+        }));
+      };
+      updateGameState();
     }
 
-    window.localStorage.setItem('timeState', JSON.stringify(now));
-    window.localStorage.setItem('gameState', JSON.stringify(gameState));
-    if (timeState !== now) {
-      getRandomQuestion();
+    // 1시간 경과 후 데이터 관리 로직
+    if (oneHourTimer > 0) {
+      const updateGameState = async () => {
+        const questionText = await getRandomQuestion();
+        setIsDone(false);
+        setGameState(() => ({
+          guesses: [],
+          solution: questionText,
+          isDone: false,
+        }));
+        setGuesses([]);
+        setCurrentAttempt(1);
+        window.localStorage.setItem(
+          'gameState',
+          JSON.stringify({
+            guesses: [],
+            solution: questionText,
+            isDone: false,
+          })
+        );
+        setTimeState(now);
+        window.localStorage.setItem('timeState', JSON.stringify(now));
+      };
+      updateGameState();
     }
-  }, [timeState, gameState, getRandomQuestion, now]);
+  }, [timeState, now, getRandomQuestion, gameState]);
 
   return (
     <div>
@@ -152,6 +203,8 @@ function App() {
         <div>
           <LetterRowList
             answer={gameState.solution}
+            isDone={isDone}
+            setIsDone={setIsDone}
             keyArray={keyArray}
             setKeyArray={setKeyArray}
             guesses={guesses}

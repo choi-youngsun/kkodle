@@ -25,10 +25,8 @@ export default function CalculateResult(
   const correctGames = gameResult.filter(
     (result) => typeof result.attempt === 'number'
   ).length;
-  const correctRatio =
-    totalGames > 0 ? (correctGames / totalGames).toFixed(3) : 0;
-
-  const correctRate = Number(correctRatio) * 100;
+  const correctRate =
+    totalGames > 0 ? Math.round((correctGames / totalGames) * 100) : 0;
 
   // 3. 최근 연속 정답 횟수
   let recentStreak = 0;
